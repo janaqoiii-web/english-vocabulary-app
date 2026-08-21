@@ -93,7 +93,18 @@
       <!-- Top Progress Bar -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div class="flex justify-between items-center text-xs font-semibold text-slate-600 mb-2">
-          <span><i class="fa-solid fa-calendar-check text-brand-600 mr-1.5"></i>今日學習目標</span>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span><i class="fa-solid fa-calendar-check text-brand-600 mr-1"></i>今日目標</span>
+            <select id="study-target-select" onchange="app.changeDailyNewTarget(this.value)" class="bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-0.5 font-bold focus:outline-none cursor-pointer transition">
+              <option value="5">5 個新詞/日</option>
+              <option value="10">10 個新詞/日</option>
+              <option value="15">15 個新詞/日</option>
+              <option value="20">20 個新詞/日</option>
+              <option value="25">25 個新詞/日</option>
+              <option value="30">30 個新詞/日</option>
+              <option value="50">50 個新詞/日</option>
+            </select>
+          </div>
           <span id="study-progress-text">0 / 0 個</span>
         </div>
         <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden p-0.5 border border-slate-200/50">
@@ -343,35 +354,25 @@
             </label>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1">提醒時間</label>
-              <input type="time" id="reminder-time" value="20:00" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-600 focus:outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1">提示鈴聲選擇</label>
-              <select id="ringtone-select" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold focus:border-brand-600 focus:outline-none">
-                <option value="chime">水晶和弦 (Crystal Chime)</option>
-                <option value="marimba">溫和木琴 (Warm Marimba)</option>
-                <option value="bell">清晨鐘聲 (Morning Bell)</option>
-                <option value="beep">電子雙音 (Digital Beep)</option>
-              </select>
-            </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="time" id="reminder-time" value="20:00" class="px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:border-brand-600 focus:outline-none">
           </div>
+        </div>
 
-          <div class="flex flex-wrap items-center gap-2 pt-1">
-            <button onclick="app.requestNotificationPermission()" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200 transition flex items-center gap-1.5">
-              <i class="fa-solid fa-bell font-bold"></i> <span id="btn-sys-noti-text">開啟手機系統通知權限</span>
-            </button>
-            <button onclick="app.saveReminderSetting()" class="px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition shadow-xs">
-              儲存提醒設定
-            </button>
-            <button onclick="app.previewRingtone()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition flex items-center gap-1.5">
-              <i class="fa-solid fa-music text-brand-600"></i> 試聽鈴聲
-            </button>
-            <button onclick="app.testNotification()" class="px-3.5 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold rounded-xl border border-brand-200 transition flex items-center gap-1.5">
-              <i class="fa-solid fa-play"></i> 立即測試提醒
-            </button>
+        <!-- Daily Target Setting Section -->
+        <div class="border-t border-slate-100 pt-6 space-y-3">
+          <label class="block text-sm font-bold text-slate-700">每日學習新單字目標</label>
+          <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <select id="settings-target-select" onchange="app.changeDailyNewTarget(this.value)" class="w-full sm:w-auto px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold focus:border-brand-600 focus:outline-none">
+              <option value="5">每日 5 個新詞</option>
+              <option value="10">每日 10 個新詞 (預設)</option>
+              <option value="15">每日 15 個新詞</option>
+              <option value="20">每日 20 個新詞</option>
+              <option value="25">每日 25 個新詞</option>
+              <option value="30">每日 30 個新詞</option>
+              <option value="50">每日 50 個新詞</option>
+            </select>
+            <p class="text-xs text-slate-500">當日到期需要溫習的舊單字會全數列出，此設定控制每日加入的新單字數量。</p>
           </div>
         </div>
 
@@ -388,7 +389,7 @@
           </div>
         </div>
 
-        <!-- STT Cloud Recognition Settings (Fix Mobile App Issue) -->
+        <!-- STT Cloud Recognition Settings -->
         <div class="border-t border-slate-100 pt-6 space-y-3">
           <div class="flex justify-between items-center">
             <label class="block text-sm font-bold text-slate-700">口說辨識引擎設定 (iOS/Android WebView 解決方案)</label>
@@ -653,6 +654,8 @@
         this.currentStudyIdx = 0;
         this.completedCountToday = 0;
 
+        this.dailyNewTarget = parseInt(localStorage.getItem('srs_daily_new_target')) || 10;
+
         this.quizWords = [];
         this.currentQuizIdx = 0;
         this.quizScore = 0;
@@ -661,18 +664,14 @@
 
         this.selectedVoice = null;
         this.recognition = null;
-        this.mediaRecorder = null;
-        this.audioChunks = [];
-        this.isRecording = false;
         this.whisperApiKey = localStorage.getItem('srs_whisper_key') || '';
 
         // Audio Context for unlocking on touch
         this.audioCtx = null;
 
-        // Reminder & Ringtone settings
+        // Reminder settings
         this.reminderEnabled = localStorage.getItem('srs_reminder_enabled') !== 'false';
         this.reminderTime = localStorage.getItem('srs_reminder') || '20:00';
-        this.ringtoneType = localStorage.getItem('srs_ringtone') || 'chime';
         this.lastTriggeredDate = '';
 
         this.init();
@@ -699,12 +698,15 @@
         const apiKeyInput = document.getElementById('whisper-api-key');
         if (apiKeyInput) apiKeyInput.value = this.whisperApiKey;
 
+        // Restore target settings UI
+        const studyTargetSel = document.getElementById('study-target-select');
+        if (studyTargetSel) studyTargetSel.value = this.dailyNewTarget.toString();
+        const settingsTargetSel = document.getElementById('settings-target-select');
+        if (settingsTargetSel) settingsTargetSel.value = this.dailyNewTarget.toString();
+
         // Restore reminder settings UI
         const timeInput = document.getElementById('reminder-time');
         if (timeInput) timeInput.value = this.reminderTime;
-
-        const ringtoneSelect = document.getElementById('ringtone-select');
-        if (ringtoneSelect) ringtoneSelect.value = this.ringtoneType;
 
         const toggleInput = document.getElementById('reminder-toggle');
         if (toggleInput) {
@@ -722,11 +724,45 @@
         this.startReminderScheduler();
       }
 
+      showToast(title, message, icon = 'fa-circle-info', isError = false) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-lg border transition-all duration-300 transform translate-y-2 opacity-0 ${
+          isError ? 'bg-rose-900 text-white border-rose-700' : 'bg-slate-900 text-white border-slate-800'
+        }`;
+        toast.innerHTML = `
+          <div class="w-8 h-8 rounded-full ${isError ? 'bg-rose-800' : 'bg-brand-600'} flex items-center justify-center shrink-0">
+            <i class="fa-solid ${icon} text-sm"></i>
+          </div>
+          <div class="flex-1 text-xs">
+            <h4 class="font-bold text-slate-100">${title}</h4>
+            <p class="text-slate-300 mt-0.5">${message}</p>
+          </div>
+          <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
       initAudioContextUnlock() {
         const unlock = () => {
           if (!this.audioCtx) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) this.audioCtx = new AudioContext();
+            if (AudioContext) {
+              this.audioCtx = new AudioContext();
+            }
           }
           if (this.audioCtx && this.audioCtx.state === 'suspended') {
             this.audioCtx.resume();
@@ -738,273 +774,81 @@
         document.addEventListener('touchstart', unlock);
       }
 
-      async requestNotificationPermission() {
-        if (!('Notification' in window)) {
-          alert('您的行動裝置瀏覽器不支援 Web Notification。若需鎖屏提醒，請將本網頁打包為原生 App。');
-          return;
-        }
-
-        try {
-          const perm = await Notification.requestPermission();
-          this.updateNotificationPermissionUI();
-          if (perm === 'granted') {
-            this.showToast('✅ 已授權手機通知', '系統現在可以在提醒時間跳出手機推播彈窗！', 'fa-bell', true);
-          } else if (perm === 'denied') {
-            alert('通知權限已被拒絕。請至手機設定 -> 瀏覽器 -> 允許通知權限。');
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      }
-
-      updateNotificationPermissionUI() {
-        const btnText = document.getElementById('btn-sys-noti-text');
-        if (!btnText) return;
-
-        if (!('Notification' in window)) {
-          btnText.innerText = '瀏覽器不支援系統通知';
-          return;
-        }
-
-        if (Notification.permission === 'granted') {
-          btnText.innerText = '系統通知權限已開啟 ✅';
-        } else if (Notification.permission === 'denied') {
-          btnText.innerText = '通知權限已拒絕 (需至手機設定開啟)';
-        } else {
-          btnText.innerText = '開啟手機系統通知權限';
-        }
-      }
-
-      playNotificationSound(soundType = null) {
-        try {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContext) return;
-          if (!this.audioCtx) this.audioCtx = new AudioContext();
-          if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-
-          const ctx = this.audioCtx;
-          const type = soundType || this.ringtoneType;
-
-          if (type === 'marimba') {
-            const freqs = [523.25, 659.25, 783.99, 1046.50];
-            freqs.forEach((freq, i) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
-              gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
-              gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + i * 0.12 + 0.02);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.4);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(ctx.currentTime + i * 0.12);
-              osc.stop(ctx.currentTime + i * 0.12 + 0.45);
-            });
-          } else if (type === 'bell') {
-            const freqs = [587.33, 880, 1174.66];
-            freqs.forEach((freq, i) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'triangle';
-              osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.16);
-              gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.16);
-              gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + i * 0.16 + 0.03);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.16 + 0.8);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(ctx.currentTime + i * 0.16);
-              osc.stop(ctx.currentTime + i * 0.16 + 0.85);
-            });
-          } else if (type === 'beep') {
-            const freqs = [880, 1200];
-            freqs.forEach((freq, i) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'square';
-              osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
-              gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
-              gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i * 0.12 + 0.01);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.2);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(ctx.currentTime + i * 0.12);
-              osc.stop(ctx.currentTime + i * 0.12 + 0.22);
-            });
-          } else { // 'chime'
-            const notes = [523.25, 659.25, 783.99, 987.77, 1046.50];
-            notes.forEach((freq, i) => {
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.1);
-              gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
-              gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + i * 0.1 + 0.02);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.6);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(ctx.currentTime + i * 0.1);
-              osc.stop(ctx.currentTime + i * 0.1 + 0.65);
-            });
-          }
-        } catch (e) {
-          console.error("Audio playback failed:", e);
-        }
-      }
-
-      triggerSystemNotification(title, body) {
-        if ('Notification' in window && Notification.permission === 'granted') {
-          try {
-            new Notification(title, {
-              body: body,
-              icon: 'https://cdn-icons-png.flaticon.com/512/3815/3815321.png'
-            });
-          } catch (e) {
-            console.error('System notification error:', e);
-          }
-        }
-      }
-
-      showToast(title, message, icon = 'fa-bell', playSound = true) {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-
-        if (playSound && this.reminderEnabled) {
-          this.playNotificationSound();
-        }
-
-        this.triggerSystemNotification(title, message);
-
-        const toast = document.createElement('div');
-        toast.className = 'pointer-events-auto bg-slate-900 text-white rounded-2xl p-4 shadow-xl border border-slate-700 flex items-start gap-3 transition-all duration-300 transform translate-y-[-10px] opacity-0';
-        
-        toast.innerHTML = `
-          <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 text-sm font-bold shadow-md">
-            <i class="fa-solid ${icon}"></i>
-          </div>
-          <div class="flex-1 pr-2">
-            <h4 class="text-xs font-bold text-slate-100">${title}</h4>
-            <p class="text-[11px] text-slate-300 mt-0.5 leading-relaxed">${message}</p>
-          </div>
-          <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1 text-xs">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        `;
-
-        container.appendChild(toast);
-
-        requestAnimationFrame(() => {
-          toast.classList.remove('translate-y-[-10px]', 'opacity-0');
-        });
-
-        setTimeout(() => {
-          if (toast.parentElement) {
-            toast.classList.add('opacity-0', 'translate-y-[-10px]');
-            setTimeout(() => toast.remove(), 300);
-          }
-        }, 5000);
-      }
-
-      startReminderScheduler() {
-        setInterval(() => {
-          if (!this.reminderEnabled) return;
-
-          const now = new Date();
-          const hours = String(now.getHours()).padStart(2, '0');
-          const minutes = String(now.getMinutes()).padStart(2, '0');
-          const currentTimeStr = `${hours}:${minutes}`;
-          const todayStr = getTodayString();
-
-          const triggerKey = `${todayStr}_${currentTimeStr}`;
-          if (currentTimeStr === this.reminderTime && this.lastTriggeredDate !== triggerKey) {
-            this.lastTriggeredDate = triggerKey;
-            this.showToast('⏰ 每日溫習時間到了！', '別忘了今天還有需要溫習的英語生字，快點擊開始學習吧！', 'fa-clock', true);
-          }
-        }, 20000);
-      }
-
-      toggleReminder(enabled) {
-        this.reminderEnabled = enabled;
-        localStorage.setItem('srs_reminder_enabled', enabled ? 'true' : 'false');
-        this.updateReminderToggleLabel(enabled);
-      }
-
-      updateReminderToggleLabel(enabled) {
-        const lbl = document.getElementById('reminder-toggle-label');
-        if (lbl) {
-          lbl.innerText = enabled ? '開啟提醒' : '已關閉提醒';
-          lbl.className = enabled ? 'ml-2 text-xs font-semibold text-brand-600' : 'ml-2 text-xs font-semibold text-slate-400';
-        }
-      }
-
-      previewRingtone() {
-        const selected = document.getElementById('ringtone-select').value;
-        this.playNotificationSound(selected);
-        this.showToast('🎵 鈴聲試聽', `正在播放「${document.getElementById('ringtone-select').options[document.getElementById('ringtone-select').selectedIndex].text}」音效`, 'fa-music', false);
-      }
-
-      saveReminderSetting() {
-        const time = document.getElementById('reminder-time').value;
-        const ringtone = document.getElementById('ringtone-select').value;
-        
-        this.reminderTime = time;
-        this.ringtoneType = ringtone;
-
-        localStorage.setItem('srs_reminder', time);
-        localStorage.setItem('srs_ringtone', ringtone);
-
-        this.showToast('✅ 設定已儲存', `每日提醒已設定為 ${time}，並選用提示鈴聲。`, 'fa-circle-check', true);
-      }
-
-      testNotification() {
-        this.showToast('🔔 每日溫習提醒測試', '別忘了今天還有需要溫習的生字喔！快來提升記憶力吧！', 'fa-bell', true);
-      }
-
       initVoices() {
         if (!('speechSynthesis' in window)) return;
-        const updateVoices = () => {
-          const voices = speechSynthesis.getVoices();
-          const select = document.getElementById('voice-select');
-          if (!select) return;
 
-          select.innerHTML = '<option value="">自動選擇系統預設女聲 (Female Voice)</option>';
-          const enVoices = voices.filter(v => v.lang.startsWith('en'));
+        const loadVoiceList = () => {
+          const voices = window.speechSynthesis.getVoices();
+          const voiceSelect = document.getElementById('voice-select');
+          if (!voiceSelect) return;
+
+          voiceSelect.innerHTML = '<option value="">自動選擇系統預設女聲 (Female Voice)</option>';
           
-          enVoices.forEach(v => {
+          const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+          englishVoices.forEach((v) => {
             const opt = document.createElement('option');
             opt.value = v.name;
-            opt.textContent = `${v.name} (${v.lang})`;
-            select.appendChild(opt);
+            opt.innerText = `${v.name} (${v.lang})`;
+            voiceSelect.appendChild(opt);
           });
 
-          const femaleVoice = enVoices.find(v => 
-            v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Victoria') || v.name.includes('Karen') || v.name.includes('Female') || v.name.includes('Google US English')
-          ) || enVoices[0];
-
-          if (femaleVoice) {
-            this.selectedVoice = femaleVoice;
-            select.value = femaleVoice.name;
+          // Default female English voice selection
+          const prefVoice = englishVoices.find(v => 
+            v.name.toLowerCase().includes('female') || 
+            v.name.toLowerCase().includes('samantha') || 
+            v.name.toLowerCase().includes('zira') ||
+            v.name.toLowerCase().includes('victoria') ||
+            v.name.toLowerCase().includes('google us english')
+          );
+          if (prefVoice) {
+            this.selectedVoice = prefVoice;
           }
         };
 
-        speechSynthesis.onvoiceschanged = updateVoices;
-        updateVoices();
+        loadVoiceList();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+          window.speechSynthesis.onvoiceschanged = loadVoiceList;
+        }
       }
 
       changeVoice() {
-        const val = document.getElementById('voice-select').value;
-        const voices = speechSynthesis.getVoices();
-        this.selectedVoice = voices.find(v => v.name === val) || null;
+        const voiceSelect = document.getElementById('voice-select');
+        if (!voiceSelect || !('speechSynthesis' in window)) return;
+        const selectedName = voiceSelect.value;
+        const voices = window.speechSynthesis.getVoices();
+        this.selectedVoice = voices.find(v => v.name === selectedName) || null;
       }
 
       testVoice() {
-        this.speakText("Hello! This is a test for English voice pronunciation.");
+        this.speakText('Hello! SRS Vocab Master is ready to help you learn English.');
       }
 
-      saveWhisperKey() {
-        const key = document.getElementById('whisper-api-key').value.trim();
-        this.whisperApiKey = key;
-        localStorage.setItem('srs_whisper_key', key);
-        alert(key ? '✅ 已儲存 OpenAI Whisper 雲端語音辨識金鑰！' : 'ℹ️ 已清除 Whisper 金鑰，將切換回標準瀏覽器辨識模式。');
+      speakText(text) {
+        if (!('speechSynthesis' in window) || !text) return;
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+
+        if (this.selectedVoice) {
+          utterance.voice = this.selectedVoice;
+        }
+
+        window.speechSynthesis.speak(utterance);
+      }
+
+      speakCurrentWord() {
+        if (this.currentStudyIdx < this.todayQueue.length) {
+          this.speakText(this.todayQueue[this.currentStudyIdx].word);
+        }
+      }
+
+      speakSentence() {
+        if (this.currentStudyIdx < this.todayQueue.length) {
+          const sentence = this.todayQueue[this.currentStudyIdx].sentence;
+          if (sentence) this.speakText(sentence);
+        }
       }
 
       initSpeechRec() {
@@ -1013,158 +857,150 @@
           this.recognition = new SpeechRecognition();
           this.recognition.lang = 'en-US';
           this.recognition.interimResults = false;
+          this.recognition.maxAlternatives = 1;
 
           this.recognition.onstart = () => {
-            this.isRecording = true;
-            document.getElementById('rec-status').innerText = "🎙️ 正在聆聽，請朗讀英文單字...";
-            document.getElementById('btn-mic').classList.add('bg-rose-600', 'animate-pulse');
+            const btn = document.getElementById('btn-mic');
+            const status = document.getElementById('rec-status');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>聆聽中...</span>';
+            if (status) status.innerText = '🎙️ 請朗讀當前單字...';
           };
 
-          this.recognition.onresult = (e) => {
-            const transcript = e.results[0][0].transcript.toLowerCase().trim();
-            this.evaluateSpeechResult(transcript);
+          this.recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.trim().toLowerCase();
+            const currentWord = (this.todayQueue[this.currentStudyIdx]?.word || '').toLowerCase();
+            const status = document.getElementById('rec-status');
+
+            if (transcript.includes(currentWord) || currentWord.includes(transcript)) {
+              if (status) status.innerHTML = `<span class="text-emerald-400 font-bold">✅ 發音正確！識別到：「${transcript}」</span>`;
+            } else {
+              if (status) status.innerHTML = `<span class="text-amber-400">⚠️ 識別結果：「${transcript}」（標準: ${currentWord}）</span>`;
+            }
           };
 
           this.recognition.onerror = () => {
-            document.getElementById('rec-status').innerText = "⚠️ 語音辨識失敗，請嘗試模擬試讀或設定 Whisper API。";
+            const status = document.getElementById('rec-status');
+            if (status) status.innerText = '❌ 麥克風識別失敗，請重新試一次。';
+            this.resetMicBtn();
           };
 
           this.recognition.onend = () => {
-            this.isRecording = false;
-            document.getElementById('btn-mic').classList.remove('bg-rose-600', 'animate-pulse');
+            this.resetMicBtn();
           };
         }
       }
 
-      async toggleSpeechRec() {
-        if (this.whisperApiKey) {
-          if (this.isRecording) {
-            this.stopMediaRecorder();
-          } else {
-            this.startMediaRecorder();
-          }
-          return;
-        }
+      resetMicBtn() {
+        const btn = document.getElementById('btn-mic');
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span>開始朗讀</span>';
+      }
 
+      toggleSpeechRec() {
         if (!this.recognition) {
-          alert('您的環境不支援原生 WebSpeech，請在「設定」中填入 Whisper API Key，或使用「🧪 模擬試讀」。');
+          this.showToast('語音識別不支援', '您的瀏覽器或環境暫不支援原生麥克風識別，可點擊「模擬試讀」測試！', 'fa-microphone-slash', true);
           return;
         }
-        if (this.isRecording) {
+
+        try {
+          this.recognition.start();
+        } catch (e) {
           this.recognition.stop();
-        } else {
-          try { this.recognition.start(); } catch (e) {}
+          this.resetMicBtn();
         }
-      }
-
-      async startMediaRecorder() {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          this.mediaRecorder = new MediaRecorder(stream);
-          this.audioChunks = [];
-
-          this.mediaRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0) this.audioChunks.push(event.data);
-          };
-
-          this.mediaRecorder.onstop = async () => {
-            document.getElementById('rec-status').innerText = "⏳ 正在經由雲端辨識語音中...";
-            const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-            await this.transcribeWithWhisper(audioBlob);
-            stream.getTracks().forEach(track => track.stop());
-          };
-
-          this.mediaRecorder.start();
-          this.isRecording = true;
-          document.getElementById('rec-status').innerText = "🎙️ [錄音中] 請朗讀英文單字，完成後再點一次按鈕...";
-          document.getElementById('btn-mic').classList.add('bg-rose-600', 'animate-pulse');
-        } catch (err) {
-          alert('無法存取麥克風，請確認已授予麥克風權限！');
-        }
-      }
-
-      stopMediaRecorder() {
-        if (this.mediaRecorder && this.isRecording) {
-          this.mediaRecorder.stop();
-          this.isRecording = false;
-          document.getElementById('btn-mic').classList.remove('bg-rose-600', 'animate-pulse');
-        }
-      }
-
-      async transcribeWithWhisper(audioBlob) {
-        try {
-          const formData = new FormData();
-          formData.append('file', audioBlob, 'speech.webm');
-          formData.append('model', 'whisper-1');
-          formData.append('language', 'en');
-
-          const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${this.whisperApiKey}` },
-            body: formData
-          });
-
-          if (!response.ok) throw new Error('API 請求失敗');
-          const data = await response.json();
-          this.evaluateSpeechResult(data.text || '');
-        } catch (error) {
-          document.getElementById('rec-status').innerText = "❌ 雲端語音辨識失敗，請檢查 Whisper API Key 設定。";
-        }
-      }
-
-      evaluateSpeechResult(transcript) {
-        const currentWord = this.todayQueue[this.currentStudyIdx]?.word.toLowerCase().trim();
-        const cleanTranscript = transcript.toLowerCase().trim();
-
-        if (cleanTranscript.includes(currentWord) || currentWord.includes(cleanTranscript)) {
-          document.getElementById('rec-status').innerText = `✅ 辨識成功: "${transcript}" (發音非常標準!)`;
-          document.getElementById('rec-status').className = "text-[11px] text-emerald-400 font-bold mt-2";
-        } else {
-          document.getElementById('rec-status').innerText = `❌ 辨識結果: "${transcript}" (請再試一次)`;
-          document.getElementById('rec-status').className = "text-[11px] text-rose-400 font-bold mt-2";
-        }
-      }
-
-      speakText(text) {
-        if (!('speechSynthesis' in window)) return;
-        try {
-          window.speechSynthesis.cancel();
-        } catch (e) {}
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.pitch = 1.15;
-        utterance.rate = 0.85;
-
-        if (this.selectedVoice) {
-          utterance.voice = this.selectedVoice;
-        }
-
-        window._activeUtterance = utterance;
-        window.speechSynthesis.speak(utterance);
-      }
-
-      speakCurrentWord() {
-        const word = this.todayQueue[this.currentStudyIdx];
-        if (word) this.speakText(word.word);
-      }
-
-      speakSentence() {
-        const word = this.todayQueue[this.currentStudyIdx];
-        if (word && word.sentence) this.speakText(word.sentence);
       }
 
       simulateSpeechRec() {
-        const word = this.todayQueue[this.currentStudyIdx]?.word;
-        if (!word) return;
-        document.getElementById('rec-status').innerText = `✅ [模擬結果]: "${word}" (發音非常標準!)`;
-        document.getElementById('rec-status').className = "text-[11px] text-emerald-400 font-bold mt-2";
+        const status = document.getElementById('rec-status');
+        if (!status) return;
+
+        status.innerHTML = '<span class="text-brand-400"><i class="fa-solid fa-spinner fa-spin"></i> 模擬語音比對中...</span>';
+        
+        setTimeout(() => {
+          const currentWord = this.todayQueue[this.currentStudyIdx]?.word || 'resilient';
+          status.innerHTML = `<span class="text-emerald-400 font-bold">🎉 模擬測試成功！發音完美符合 「${currentWord}」</span>`;
+        }, 1200);
+      }
+
+      saveWhisperKey() {
+        const input = document.getElementById('whisper-api-key');
+        if (!input) return;
+        this.whisperApiKey = input.value.trim();
+        localStorage.setItem('srs_whisper_key', this.whisperApiKey);
+        this.showToast('金鑰設定已儲存', 'OpenAI Whisper API 金鑰已成功設定。', 'fa-key');
+      }
+
+      updateNotificationPermissionUI() {
+        if ('Notification' in window && Notification.permission === 'default') {
+          // Prepared for permission requests
+        }
+      }
+
+      updateReminderToggleLabel(enabled) {
+        const label = document.getElementById('reminder-toggle-label');
+        if (label) {
+          label.innerText = enabled ? '開啟提醒' : '關閉提醒';
+        }
+      }
+
+      toggleReminder(enabled) {
+        this.reminderEnabled = enabled;
+        localStorage.setItem('srs_reminder_enabled', enabled);
+        this.updateReminderToggleLabel(enabled);
+
+        if (enabled && 'Notification' in window && Notification.permission !== 'granted') {
+          Notification.requestPermission();
+        }
+
+        this.showToast(enabled ? '提醒已開啟' : '提醒已關閉', enabled ? '每日溫習提醒已啟用。' : '每日溫習提醒已停用。', 'fa-bell');
+      }
+
+      startReminderScheduler() {
+        setInterval(() => {
+          if (!this.reminderEnabled) return;
+          const now = new Date();
+          const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          const todayStr = getTodayString();
+
+          if (timeStr === this.reminderTime && this.lastTriggeredDate !== todayStr) {
+            this.lastTriggeredDate = todayStr;
+            this.triggerDailyReminder();
+          }
+        }, 30000);
+      }
+
+      triggerDailyReminder() {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('SRS Vocab Master - 溫習提醒', {
+            body: '⏰ 溫習時間到了！快來完成今天的英文單字卡吧！',
+            icon: 'https://cdn-icons-png.flaticon.com/512/3815/3815321.png'
+          });
+        } else {
+          this.showToast('⏰ 溫習提醒', '溫習時間到了！快來完成今天的英文單字卡吧！', 'fa-clock');
+        }
+      }
+
+      changeDailyNewTarget(val) {
+        const num = parseInt(val, 10);
+        if (isNaN(num) || num <= 0) return;
+
+        this.dailyNewTarget = num;
+        localStorage.setItem('srs_daily_new_target', num);
+
+        const studyTargetSel = document.getElementById('study-target-select');
+        if (studyTargetSel) studyTargetSel.value = num.toString();
+        const settingsTargetSel = document.getElementById('settings-target-select');
+        if (settingsTargetSel) settingsTargetSel.value = num.toString();
+
+        this.completedCountToday = 0;
+        this.initStudyQueue();
+
+        this.showToast('🎯 目標已更新', `每日新詞學習目標已調整為 ${num} 個單字！`, 'fa-bullseye', false);
       }
 
       initStudyQueue() {
         const todayStr = getTodayString();
         const dueWords = this.words.filter(w => w.level > 0 && w.nextReviewDate <= todayStr);
-        const newWords = this.words.filter(w => w.level === 0).slice(0, 10);
+        const newWords = this.words.filter(w => w.level === 0).slice(0, this.dailyNewTarget);
 
         this.todayQueue = [...dueWords, ...newWords];
         this.currentStudyIdx = 0;
@@ -1173,6 +1009,7 @@
 
       setupCardFlip() {
         const card = document.getElementById('flashcard');
+        if (!card) return;
         card.addEventListener('click', () => {
           card.classList.toggle('rotate-y-180');
         });
@@ -1594,7 +1431,7 @@
         }));
       }
 
-      async autoLookupDict(showToastMsg = true) {
+      async autoLookupDict() {
         const wordInput = document.getElementById('input-word').value.trim();
         if (!wordInput) return;
 
