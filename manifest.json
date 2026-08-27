@@ -7,6 +7,7 @@
   "scope": "/english-vocabulary-app/",
   "short_name": "SRS-Vocab",
   "start_url": "/english-vocabulary-app/",
+  "description": "間隔重複高效記憶英文生字系統",
   "theme_color": "#2563eb",
   "icons": [
     {
