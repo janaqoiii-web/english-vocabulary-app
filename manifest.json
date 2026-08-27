@@ -4,22 +4,22 @@
   "display": "standalone",
   "name": "SRS Vocab",
   "orientation": "any",
-  "scope": "/english-vocabulary-app/", 
+  "scope": "/english-vocabulary-app/",
   "short_name": "SRS Vocab",
-  "start_url": "https://janaqolii-web.github.io/english-vocabulary-app/",
-  "theme_color": "#2563eb",
+  "start_url": "https://janaqoiii-web.github.io/english-vocabulary-app/",
+  "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3815/3815321.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any"
-    },
-    { 
-      "src": "https://cdn-icons-png.flaticon.com/512/3815/3815321.png",
+      "src": "SRS-192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
+      "purpose": "any maskable"
+    },
+    {
+      "src": "SRS.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ]
 }
