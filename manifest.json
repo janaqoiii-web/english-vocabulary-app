@@ -4,19 +4,19 @@
   "display": "standalone",
   "name": "SRS Vocab",
   "orientation": "any",
-  "scope": "/english-vocabulary-app/", // 改掉这里
+  "scope": "/english-vocabulary-app/", 
   "short_name": "SRS Vocab",
   "start_url": "https://janaqolii-web.github.io/english-vocabulary-app/",
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "/SRS.png",
+      "src": "/english-vocabulary-app/SRS.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
-    { // 新增这一项以满足打包要求
-      "src": "SRS192.png",
+    { 
+      "src": "/english-vocabulary-app/SRS192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
