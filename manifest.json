@@ -7,7 +7,7 @@
   "scope": "/english-vocabulary-app/",
   "short_name": "SRS Vocab",
   "start_url": "https://janagoiii-web.github.io/english-vocabulary-app/",
-  "theme_color": "#2565e5",
+  "theme_color": "#2563eb",
   "icons": [
     {
       "src": "https://janagoiii-web.github.io/english-vocabulary-app/SRS.png",
