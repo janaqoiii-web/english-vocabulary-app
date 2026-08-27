@@ -6,17 +6,17 @@
   "orientation": "any",
   "scope": "/english-vocabulary-app/",
   "short_name": "SRS Vocab",
-  "start_url": "https://janaqoiii-web.github.io/english-vocabulary-app/",
+  "start_url": "https://janagoiii-web.github.io/english-vocabulary-app/",
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "https://janaqoiii-web.github.io/english-vocabulary-app/SRS.png",
+      "src": "https://janagoiii-web.github.io/english-vocabulary-app/SRS.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "https://janaqoiii-web.github.io/english-vocabulary-app/SRS192.png",
+      "src": "https://janagoiii-web.github.io/english-vocabulary-app/SRS192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
