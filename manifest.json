@@ -10,13 +10,13 @@
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "/english-vocabulary-app/SRS.png",
+      "src": "https://janaqolii-web.github.io/english-vocabulary-app/SRS.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     { 
-      "src": "/english-vocabulary-app/SRS192.png",
+      "src": "https://janaqolii-web.github.io/english-vocabulary-app/SRS192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
