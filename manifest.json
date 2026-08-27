@@ -4,23 +4,22 @@
   "display": "standalone",
   "name": "SRS Vocab",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/english-vocabulary-app/", // 改掉这里
   "short_name": "SRS Vocab",
-  "start_url": "/https://janaqoiii-web.github.io/english-vocabulary-app/",
+  "start_url": "https://janaqolii-web.github.io/english-vocabulary-app/",
   "theme_color": "#2563eb",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3815/3815321.png",
       "type": "image/png",
       "sizes": "512x512",
-      "isSquare": true,
-      "isPng": true,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 512,
-      "is512x512": true,
-      "is256x256": false,
-      "is192x192": false
+      "purpose": "any"
+    },
+    { // 新增这一项以满足打包要求
+      "src": "https://cdn-icons-png.flaticon.com/512/3815/3815321.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
     }
   ]
 }
