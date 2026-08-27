@@ -2,10 +2,10 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "standalone",
-  "name": "SRS Vocab",
+  "name": "SRS-Vocab",
   "orientation": "any",
   "scope": "/english-vocabulary-app/",
-  "short_name": "SRS Vocab",
+  "short_name": "SRS-Vocab",
   "start_url": "https://janagoiii-web.github.io/english-vocabulary-app/",
   "theme_color": "#2563eb",
   "icons": [
