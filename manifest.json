@@ -4,7 +4,7 @@
   "display": "standalone",
   "name": "SRS Vocab",
   "orientation": "any",
-  "scope": "/english-vocabulary-app/", // 
+  "scope": "/english-vocabulary-app/", 
   "short_name": "SRS Vocab",
   "start_url": "https://janaqolii-web.github.io/english-vocabulary-app/",
   "theme_color": "#2563eb",
@@ -15,7 +15,7 @@
       "sizes": "512x512",
       "purpose": "any"
     },
-    { //
+    { 
       "src": "https://cdn-icons-png.flaticon.com/512/3815/3815321.png",
       "type": "image/png",
       "sizes": "192x192",
