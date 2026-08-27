@@ -10,13 +10,13 @@
   "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3815/3815321.png",
+      "src": "/SRS.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     { // 新增这一项以满足打包要求
-      "src": "https://cdn-icons-png.flaticon.com/512/3815/3815321.png",
+      "src": "SRS192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
