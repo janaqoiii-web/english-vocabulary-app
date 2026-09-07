@@ -4,19 +4,19 @@
   "display": "standalone",
   "name": "SRS-Vocab",
   "orientation": "any",
-  "scope": "./",
+  "scope": "/",
   "short_name": "SRS-Vocab",
-  "start_url": "./",
+  "start_url": "/",
   "theme_color": "#1BA0F2",
   "icons": [
     {
-      "src": "./SRS.png",
+      "src": "/SRS.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "./SRS-192.png",
+      "src": "/SRS-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
