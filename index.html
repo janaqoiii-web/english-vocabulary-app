@@ -69,6 +69,13 @@
     nav { padding-bottom: env(safe-area-inset-bottom); }
   </style>
 </head>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker 註冊成功！'))
+      .catch(err => console.log('SW 註冊失敗：', err));
+  }
+</script>
 <body class="h-full text-slate-700 antialiased flex flex-col justify-between">
 
   <!-- Toast / Notification Banner Container -->
