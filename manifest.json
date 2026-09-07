@@ -4,19 +4,19 @@
   "display": "standalone",
   "name": "SRS-Vocab",
   "orientation": "any",
-  "scope": "/english-vocabulary-app/",
+  "scope": "./english-vocabulary-app/",
   "short_name": "SRS-Vocab",
-  "start_url": "/english-vocabulary-app/",
+  "start_url": "./english-vocabulary-app/",
   "theme_color": "#1BA0F2"",
   "icons": [
     {
-      "src": "/english-vocabulary-app/SRS.png",
+      "src": "./english-vocabulary-app/SRS.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "/english-vocabulary-app/SRS-192.png",
+      "src": "./english-vocabulary-app/SRS-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
