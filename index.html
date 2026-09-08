@@ -644,7 +644,7 @@
     // Register Service Worker for PWA Offline & Installation
     if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/english-vocabulary-app/sw.js')
+    navigator.serviceWorker.register('sw.js')
       .then(() => console.log('Service Worker 註冊成功'))
       .catch((error) => console.error('Service Worker 註冊失敗：', error));
   });
