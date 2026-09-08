@@ -643,16 +643,12 @@
   <script>
     // Register Service Worker for PWA Offline & Installation
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        const swCode = `
-          self.addEventListener('install', e => self.skipWaiting());
-          self.addEventListener('activate', e => self.clients.claim());
-          self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
-        `;
-        const blob = new Blob([swCode], { type: 'text/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-      });
-    }
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker 註冊成功'))
+      .catch((error) => console.error('Service Worker 註冊失敗：', error));
+  });
+}
 
     // Initial Seed High-frequency Vocabulary (10 Words)
     const SEED_WORDS = [
