@@ -1,0 +1,2297 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="h-full bg-slate-50/80">
+<head>
+  <link rel="manifest" href="/manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SRS Vocabulary Master - 英文生字間隔重複記憶</title>
+
+  <!-- PWA & Mobile App Support Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SRS Vocab">
+  <meta name="theme-color" content="#1BA0F2">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3815/3815321.png">
+  
+  <!-- Inline Data URI Manifest for PWA installation -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"SRS Vocab Master","short_name":"VocabMaster","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#1BA0F2","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3815/3815321.png","sizes":"512x512","type":"image/png"}]}'>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK (Auth + Firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50:  '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#1BA0F2',
+              600: '#0d8de0',
+              700: '#0a7bc4',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar & Flip card effects */
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    /* iOS Safe Area Padding */
+    header { padding-top: env(safe-area-inset-top); }
+    nav { padding-bottom: env(safe-area-inset-bottom); }
+  </style>
+</head>
+<body class="h-full text-slate-700 antialiased flex flex-col justify-between">
+
+  <!-- Toast / Notification Banner Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- Header -->
+  <header class="bg-white/95 backdrop-blur-sm border-b border-slate-100 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAABRNAAAUTQGUyo0vAAAG/WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgMTAuMC1jMDAwIDc5LmQwNGNjMTY5OCwgMjAyNS8wNy8wMi0xMjoxODoxMyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczpJcHRjNHhtcEV4dD0iaHR0cDovL2lwdGMub3JnL3N0ZC9JcHRjNHhtcEV4dC8yMDA4LTAyLTI5LyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIElwdGM0eG1wRXh0OkFydHdvcmtUaXRsZT0i5pyq5ZG95ZCN55qE5L2c5ZOBIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyNi0wOS0wN1QyMToyNDo1OCswODowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjYtMDktMDdUMjI6MDE6MDcrMDg6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjYtMDktMDdUMjI6MDE6MDcrMDg6MDAiIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjkxYTE0OTctMTJiMC00MGQ1LWFmOGUtYWFlNWRlMTA1ZmQ2IiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6MjY3MDA3ZWYtZGQ3YS0xMjQxLThkOWEtZWRiYmUzYmZlOTcwIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YjI1NTQ5N2MtYjVjNy00ODEzLWE5NDQtNDhlZTA2ZjE0ZTYxIiB0aWZmOkNvbXByZXNzaW9uPSI1IiB0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb249IjIiIHRpZmY6UmVzb2x1dGlvblVuaXQ9IjIiPiA8ZGM6dGl0bGU+IDxyZGY6QWx0PiA8cmRmOmxpIHhtbDpsYW5nPSJ4LWRlZmF1bHQiPuacquWRveWQjeeahOS9nOWTgTwvcmRmOmxpPiA8L3JkZjpBbHQ+IDwvZGM6dGl0bGU+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmIyNTU0OTdjLWI1YzctNDgxMy1hOTQ0LTQ4ZWUwNmYxNGU2MSIgc3RFdnQ6d2hlbj0iMjAyNi0wOS0wN1QyMToyNTo1NyswODowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDI3LjMgKE1hY2ludG9zaCkiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjY5MWExNDk3LTEyYjAtNDBkNS1hZjhlLWFhZTVkZTEwNWZkNiIgc3RFdnQ6d2hlbj0iMjAyNi0wOS0wN1QyMjowMTowNyswODowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDI3LjMgKE1hY2ludG9zaCkiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDwvcmRmOkRlc2Ny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" alt="SRS Logo" class="w-10 h-10 rounded-xl shadow-sm object-cover">
+        <div>
+          <h1 class="font-bold text-slate-800 text-base leading-tight sm:text-lg">SRS Vocab Master</h1>
+          <p class="text-[11px] text-slate-500 font-medium">間隔重複高效記憶系統</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Auth status -->
+        <button id="btn-auth-header" onclick="app.openAuthModal()" class="px-2.5 py-1.5 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-user text-brand-600"></i>
+          <span id="auth-header-label">登入</span>
+        </button>
+        <!-- Today progress badge -->
+        <div class="flex items-center space-x-2 bg-brand-50/80 border border-brand-100 px-3 py-1.5 rounded-full">
+          <i class="fa-solid fa-fire text-amber-400 text-sm"></i>
+          <span class="text-xs font-semibold text-brand-700">今日進度：<span id="header-progress">0/0</span></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 mb-16 sm:mb-0">
+
+    <!-- TAB 1: Daily Flashcard Study (今日溫習 / 學習) -->
+    <section id="tab-study" class="tab-content active space-y-6">
+      <!-- Top Progress Bar -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+        <div class="flex justify-between items-center text-xs font-semibold text-slate-600 mb-2">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span><i class="fa-solid fa-calendar-check text-brand-600 mr-1"></i>今日目標</span>
+            <select id="study-target-select" onchange="app.changeDailyNewTarget(this.value)" class="bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-0.5 font-bold focus:outline-none cursor-pointer transition">
+              <option value="5">5 個新詞/日</option>
+              <option value="10">10 個新詞/日</option>
+              <option value="15">15 個新詞/日</option>
+              <option value="20">20 個新詞/日</option>
+              <option value="25">25 個新詞/日</option>
+              <option value="30">30 個新詞/日</option>
+              <option value="50">50 個新詞/日</option>
+            </select>
+          </div>
+          <span id="study-progress-text">0 / 0 個</span>
+        </div>
+        <div class="w-full bg-slate-100/80 rounded-full h-3 overflow-hidden p-0.5 border border-slate-100">
+          <div id="study-progress-bar" class="bg-gradient-to-r from-brand-400 to-brand-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Flashcard Container -->
+      <div id="flashcard-container" class="perspective-1000 min-h-[380px] sm:min-h-[420px] relative">
+        <div id="flashcard" class="w-full h-full min-h-[380px] sm:min-h-[420px] bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8 flex flex-col justify-between transition-transform duration-500 transform-style-3d cursor-pointer">
+          
+          <!-- Card Front -->
+          <div id="card-front" class="absolute inset-0 p-6 sm:p-8 flex flex-col justify-between backface-hidden bg-white rounded-3xl">
+            <div class="flex justify-between items-center">
+              <span id="card-type-tag" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">NEW</span>
+              <span id="card-stage-tag" class="text-xs font-medium text-slate-400">複習週期: 0天</span>
+            </div>
+
+            <div class="text-center my-auto py-6">
+              <div class="flex items-center justify-center gap-3 mb-2">
+                <h2 id="card-word" class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">Loading...</h2>
+                <button onclick="event.stopPropagation(); app.speakCurrentWord()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-brand-100 text-brand-600 flex items-center justify-center transition" title="播放發音">
+                  <i class="fa-solid fa-volume-high text-lg"></i>
+                </button>
+              </div>
+              <p id="card-phonetic" class="text-slate-400 font-mono text-sm sm:text-base">/.../</p>
+            </div>
+
+            <div class="text-center text-xs text-slate-400 flex items-center justify-center gap-1">
+              <i class="fa-solid fa-hand-pointer"></i> 點擊卡片查看中文翻譯與例句
+            </div>
+          </div>
+
+          <!-- Card Back -->
+          <div id="card-back" class="absolute inset-0 p-6 sm:p-8 flex flex-col justify-between backface-hidden bg-slate-900 text-white rounded-3xl rotate-y-180 overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+              <span id="card-back-word" class="text-xl font-bold text-brand-400">Loading...</span>
+              <button onclick="event.stopPropagation(); app.speakCurrentWord()" class="text-slate-400 hover:text-white p-1">
+                <i class="fa-solid fa-volume-high"></i>
+              </button>
+            </div>
+
+            <div class="my-auto py-4 space-y-4">
+              <div>
+                <span class="text-[11px] font-bold uppercase text-slate-400 tracking-wider">中文釋義</span>
+                <p id="card-meaning" class="text-lg sm:text-xl font-bold text-slate-100 mt-1">中文解釋加載中...</p>
+              </div>
+              <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700/60">
+                <span class="text-[11px] font-bold uppercase text-brand-400 tracking-wider flex items-center justify-between">
+                  <span>實用例句</span>
+                  <button onclick="event.stopPropagation(); app.speakSentence()" class="text-slate-400 hover:text-brand-300">
+                    <i class="fa-solid fa-volume-high text-xs"></i>
+                  </button>
+                </span>
+                <p id="card-sentence" class="text-sm text-slate-300 mt-1.5 italic">Example sentence loading...</p>
+              </div>
+
+              <!-- Speech Recognition Test -->
+              <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-700/40 text-center">
+                <span class="text-xs text-slate-400 block mb-2">🎤 口說朗讀檢查 <span class="text-slate-500">(建議 Chrome，需允許麥克風)</span></span>
+                <div class="flex justify-center gap-2">
+                  <button id="btn-mic" onclick="event.stopPropagation(); app.toggleSpeechRec()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold rounded-lg flex items-center gap-2 transition">
+                    <i class="fa-solid fa-microphone"></i> <span>開始朗讀</span>
+                  </button>
+                  <button onclick="event.stopPropagation(); app.simulateSpeechRec()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg transition" title="免麥克風測試">
+                    🧪 模擬試讀
+                  </button>
+                </div>
+                <p id="rec-status" class="text-[11px] text-slate-400 mt-2 min-h-[16px]">點擊「開始朗讀」後清楚說出單字</p>
+              </div>
+            </div>
+
+            <div class="text-center text-xs text-slate-500 pt-2">點擊任意空白處翻回正面</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Study Action Buttons -->
+      <div id="study-controls" class="grid grid-cols-2 gap-4">
+        <button onclick="app.answerCard(false)" class="py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 font-bold rounded-2xl flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
+          <i class="fa-solid fa-xmark text-lg"></i>
+          <span>不熟悉 / 答錯</span>
+        </button>
+        <button onclick="app.answerCard(true)" class="py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
+          <i class="fa-solid fa-check text-lg"></i>
+          <span>認識 / 下一詞</span>
+        </button>
+      </div>
+
+      <!-- Completion View (Hidden by default) -->
+      <div id="study-complete" class="hidden bg-white border border-slate-100 rounded-3xl p-8 text-center space-y-4 shadow-sm">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <h3 class="text-xl font-extrabold text-slate-900">太棒了！今日學習任務已完成</h3>
+        <p class="text-slate-500 text-sm max-w-md mx-auto">您已經完成了今天排定的所有單字溫習與新詞學習。明天的學習任務將根據間隔重複算法自動生成！</p>
+        <button onclick="app.switchTab('quiz')" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl shadow-md transition">
+          前往聽力與拼字測試 <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 2: Quiz Mode (聽力與拼字測試) -->
+    <section id="tab-quiz" class="tab-content hidden space-y-6">
+      <div class="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-headphones text-brand-600"></i> 聽力與拼字測驗
+          </h2>
+          <span class="text-xs bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full">
+            目前得分：<span id="quiz-score" class="text-brand-600">0</span>
+          </span>
+        </div>
+
+        <!-- Quiz Scope Selector -->
+        <div class="mb-6 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+          <label class="block text-xs font-bold text-slate-600 mb-2.5 flex items-center justify-between">
+            <span><i class="fa-solid fa-filter text-brand-600 mr-1.5"></i>選擇測驗範圍：</span>
+            <span id="quiz-scope-info" class="text-[11px] font-normal text-slate-400">目前範圍：全部單字</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button onclick="app.setQuizScope('due')" id="btn-scope-due" class="quiz-scope-btn px-2.5 py-2 text-xs font-semibold rounded-xl border bg-white border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+              今日重溫
+            </button>
+            <button onclick="app.setQuizScope('learned')" id="btn-scope-learned" class="quiz-scope-btn px-2.5 py-2 text-xs font-semibold rounded-xl border bg-white border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+              已學單字
+            </button>
+            <button onclick="app.setQuizScope('all')" id="btn-scope-all" class="quiz-scope-btn px-2.5 py-2 text-xs font-semibold rounded-xl border bg-brand-600 text-white border-brand-600 shadow-xs transition">
+              全部單字
+            </button>
+            <button onclick="app.openCustomQuizModal()" id="btn-scope-custom" class="quiz-scope-btn px-2.5 py-2 text-xs font-semibold rounded-xl border bg-white border-slate-200 text-slate-700 hover:bg-slate-100 transition flex items-center justify-center gap-1">
+              <span>自選範圍</span>
+              <span id="custom-count-badge" class="bg-brand-100 text-brand-700 px-1.5 py-0.2 rounded-full text-[10px] hidden">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Active Card -->
+        <div id="quiz-active-card" class="text-center py-6 space-y-6">
+          <div class="inline-block">
+            <button onclick="app.playQuizAudio()" class="w-20 h-20 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg transition transform hover:scale-105 active:scale-95 mx-auto">
+              <i class="fa-solid fa-volume-high text-3xl"></i>
+            </button>
+            <span class="text-xs text-slate-400 block mt-2">點擊聽取英文發音</span>
+          </div>
+
+          <div class="max-w-md mx-auto">
+            <p id="quiz-meaning-hint" class="text-slate-600 text-sm sm:text-base font-semibold bg-slate-100 p-3 rounded-xl mb-4">提示中文釋義...</p>
+            
+            <form onsubmit="app.submitQuiz(event)" class="space-y-3">
+              <input type="text" id="quiz-input" placeholder="請輸入聽到的英文單字..." autocomplete="off" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-center text-lg font-bold text-slate-800 focus:border-brand-600 focus:outline-none transition">
+              <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition">
+                檢查答案
+              </button>
+            </form>
+          </div>
+
+          <!-- Result Feedback -->
+          <div id="quiz-feedback" class="hidden p-4 rounded-2xl max-w-md mx-auto text-sm font-semibold"></div>
+        </div>
+
+        <!-- Quiz Empty State -->
+        <div id="quiz-empty" class="hidden text-center py-10 space-y-3">
+          <i class="fa-solid fa-graduation-cap text-5xl text-slate-300"></i>
+          <p id="quiz-empty-text" class="text-slate-600 font-medium">目前選擇的範圍中尚無單字，請切換測驗範圍。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Vocabulary Management (單字庫管理) -->
+    <section id="tab-vocab" class="tab-content hidden space-y-4">
+      <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">單字庫管理</h2>
+            <p class="text-xs text-slate-500">檢視、搜尋、備份匯出或匯入您的學習單字庫</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="app.openExportModal()" class="px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-xl flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-file-export"></i> <span>匯出資料</span>
+            </button>
+            <button onclick="app.openImportModal()" class="px-3.5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold rounded-xl flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-file-import"></i> <span>匯入資料</span>
+            </button>
+            <button onclick="app.openWordModal()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2 transition">
+              <i class="fa-solid fa-plus"></i> <span>新增單字</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="flex gap-2 mb-4">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+            <input type="text" id="vocab-search" oninput="app.renderWordsTable()" placeholder="搜尋單字或中文解釋..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:border-brand-600 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Word List: mobile-friendly cards (full-width Chinese meaning) -->
+        <div id="vocab-table-body" class="space-y-2.5">
+          <!-- Injected by JS as cards -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Settings (設定與提醒) -->
+    <section id="tab-settings" class="tab-content hidden space-y-6">
+      <div class="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">系統設定與提醒</h2>
+
+        <!-- Reminder Setting -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <label class="block text-sm font-bold text-slate-700">每日溫習提醒時間與鈴聲</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="reminder-toggle" onchange="app.toggleReminder(this.checked)" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+              <span class="ml-2 text-xs font-semibold text-slate-600" id="reminder-toggle-label">開啟提醒</span>
+            </label>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input type="time" id="reminder-time" value="20:00" class="px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:border-brand-600 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Daily Target Setting Section -->
+        <div class="border-t border-slate-100 pt-6 space-y-3">
+          <label class="block text-sm font-bold text-slate-700">每日學習新單字目標</label>
+          <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <select id="settings-target-select" onchange="app.changeDailyNewTarget(this.value)" class="w-full sm:w-auto px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold focus:border-brand-600 focus:outline-none">
+              <option value="5">每日 5 個新詞</option>
+              <option value="10">每日 10 個新詞 (預設)</option>
+              <option value="15">每日 15 個新詞</option>
+              <option value="20">每日 20 個新詞</option>
+              <option value="25">每日 25 個新詞</option>
+              <option value="30">每日 30 個新詞</option>
+              <option value="50">每日 50 個新詞</option>
+            </select>
+            <p class="text-xs text-slate-500">當日到期需要溫習的舊單字會全數列出，此設定控制每日加入的新單字數量。</p>
+          </div>
+        </div>
+
+        <!-- Voice Settings -->
+        <div class="border-t border-slate-100 pt-6 space-y-3">
+          <label class="block text-sm font-bold text-slate-700">發音語音設定 (優先選用英語女聲)</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <select id="voice-select" onchange="app.changeVoice()" class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:border-brand-600 focus:outline-none">
+              <option value="">自動選擇系統預設女聲 (Female Voice)</option>
+            </select>
+            <button onclick="app.testVoice()" class="px-4 py-2 bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold rounded-xl hover:bg-slate-200 transition">
+              測試語音發音
+            </button>
+          </div>
+        </div>
+
+        <!-- Firebase Cloud Auth Config -->
+        <div class="border-t border-slate-100 pt-6 space-y-3">
+          <label class="block text-sm font-bold text-slate-700">雲端登入設定（Firebase 免費）</label>
+          <p class="text-xs text-slate-500 leading-relaxed">到 <a href="https://console.firebase.google.com/" target="_blank" class="text-brand-600 font-semibold underline">Firebase Console</a> 建立專案 → 啟用 Authentication（Email/Password）與 Firestore → 將專案設定貼下方。設定後即可註冊／登入並跨裝置同步單字。</p>
+          <textarea id="firebase-config-input" rows="5" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}' class="w-full px-3 py-2 border border-slate-200 rounded-xl text-[11px] font-mono focus:border-brand-600 focus:outline-none"></textarea>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="app.saveFirebaseConfig()" class="px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition">儲存並連接 Firebase</button>
+            <button type="button" onclick="app.openAuthModal()" class="px-4 py-2 bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold rounded-xl hover:bg-slate-200 transition">開啟登入／註冊</button>
+          </div>
+          <p id="firebase-status" class="text-[11px] text-slate-500">尚未連接 Firebase</p>
+        </div>
+
+        <!-- Reset Data -->
+        <div class="border-t border-slate-100 pt-6">
+          <h3 class="text-xs font-bold text-rose-600 uppercase tracking-wider mb-2">危險區域</h3>
+          <button onclick="app.resetAllData()" class="px-4 py-2 bg-rose-50 border border-rose-200 text-rose-600 text-xs font-bold rounded-xl hover:bg-rose-100 transition">
+            重設所有學習進度與單字庫
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Export Modal -->
+  <div id="modal-export" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-file-export text-emerald-600"></i> 匯出生字紀錄備份
+        </h3>
+        <button onclick="app.closeExportModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 mb-4">請選擇您偏好的匯出格式，方便跨裝置備份或在試算表中開啟：</p>
+
+      <div class="space-y-3 mb-6">
+        <label class="flex items-start p-3 border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-emerald-500 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50">
+          <input type="radio" name="export-format" value="json" checked class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
+          <div class="ml-3">
+            <span class="block text-xs font-bold text-slate-800">JSON 格式 (.json) - 完整系統備份 <span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full ml-1">推薦</span></span>
+            <span class="block text-[11px] text-slate-500 mt-0.5">包含記憶階段 (S-1~S-5)、下次溫習日期與例句，方便在手機/電腦完美轉移。</span>
+          </div>
+        </label>
+
+        <label class="flex items-start p-3 border-2 border-slate-200 rounded-2xl cursor-pointer hover:border-emerald-500 transition has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/50">
+          <input type="radio" name="export-format" value="csv" class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
+          <div class="ml-3">
+            <span class="block text-xs font-bold text-slate-800">CSV 格式 (.csv) - Excel / 試算表格式</span>
+            <span class="block text-[11px] text-slate-500 mt-0.5">匯出通用表格，支援使用 Excel 或 Google Sheets 開啟、閱讀與自訂編輯。</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button onclick="app.closeExportModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50">取消</button>
+        <button onclick="app.confirmExport()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i> 下載備份檔案
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div id="modal-import" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-file-import text-indigo-600"></i> 匯入生字紀錄
+        </h3>
+        <button onclick="app.closeImportModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 mb-4">支援選擇之前匯出的 JSON 或 CSV 檔案進行復原或新增：</p>
+
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">選擇備份檔案 (.json 或 .csv)</label>
+          <input type="file" id="import-file-input" accept=".json, .csv" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl cursor-pointer">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2">匯入處理方式：</label>
+          <div class="space-y-2">
+            <label class="flex items-center text-xs font-semibold text-slate-700 cursor-pointer">
+              <input type="radio" name="import-mode" value="merge" checked class="text-indigo-600 focus:ring-indigo-500 mr-2">
+              <span>合併新增 (自動過濾重複單字，保留原有資料)</span>
+            </label>
+            <label class="flex items-center text-xs font-semibold text-slate-700 cursor-pointer">
+              <input type="radio" name="import-mode" value="overwrite" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+              <span class="text-rose-600">完全覆蓋 (清空目前單字，改用新檔案)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button onclick="app.closeImportModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50">取消</button>
+        <button onclick="app.confirmImport()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 shadow-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-upload"></i> 開始匯入
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Quiz Selection Modal -->
+  <div id="modal-custom-quiz" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-brand-600"></i> 自選測驗單字範圍
+        </h3>
+        <button onclick="app.closeCustomQuizModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 mb-3">請勾選要納入本次測驗的單字，可依下次溫習日期篩選：</p>
+
+      <!-- Date filter (primary: next review date) -->
+      <div class="mb-3 p-2.5 bg-slate-50 border border-slate-100 rounded-xl space-y-2.5">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="font-bold text-slate-600 shrink-0"><i class="fa-solid fa-calendar-days text-brand-600 mr-1"></i>下次溫習日期篩選：</span>
+          <select id="custom-date-filter" onchange="app.onCustomDateFilterChange()" class="px-2 py-1 border border-slate-200 rounded-lg text-xs font-semibold bg-white focus:border-brand-600 focus:outline-none">
+            <option value="all">全部單字</option>
+            <option value="due">今日到期及之前</option>
+            <option value="today">僅今日</option>
+            <option value="future">未來才溫習</option>
+            <option value="specific">指定日期</option>
+          </select>
+          <input type="date" id="custom-date-picker" onchange="app.onCustomDateFilterChange()" class="hidden px-2 py-1 border border-slate-200 rounded-lg text-xs font-semibold bg-white focus:border-brand-600 focus:outline-none">
+        </div>
+        <!-- Quick chips of existing review dates -->
+        <div id="custom-date-chips" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
+      <div class="flex justify-between items-center mb-2 text-xs">
+        <div class="space-x-2">
+          <button onclick="app.selectAllCustomQuiz(true)" class="text-brand-600 font-bold hover:underline">全選目前</button>
+          <span class="text-slate-300">|</span>
+          <button onclick="app.selectAllCustomQuiz(false)" class="text-slate-500 font-bold hover:underline">全不選</button>
+        </div>
+        <span class="text-slate-500 font-medium">已選 <span id="custom-selected-count" class="font-bold text-brand-600">0</span> / <span id="custom-total-count">0</span> 個</span>
+      </div>
+
+      <!-- Word List Container -->
+      <div id="custom-quiz-word-list" class="flex-1 overflow-y-auto border border-slate-200 rounded-2xl p-2 space-y-1 mb-4 min-h-[180px] max-h-[280px]">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div class="flex justify-end gap-2 shrink-0">
+        <button onclick="app.closeCustomQuizModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50">取消</button>
+        <button onclick="app.confirmCustomQuizSelection()" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold hover:bg-brand-700 shadow-xs">套用並開始測驗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Word Modal -->
+  <div id="modal-word" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="modal-word-title" class="text-lg font-bold text-slate-900">新增單字</h3>
+        <button onclick="app.closeWordModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form onsubmit="app.saveWord(event)" class="space-y-4">
+        <input type="hidden" id="edit-word-id">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">英文單字 *</label>
+          <div class="flex gap-2">
+            <input type="text" id="input-word" required onblur="app.autoLookupDict(false)" placeholder="例如: resilient" class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold focus:border-brand-600 focus:outline-none">
+            <button type="button" id="btn-auto-lookup" onclick="app.autoLookupDict(true)" class="px-3.5 py-2 bg-brand-50 border border-brand-200 text-brand-600 text-xs font-bold rounded-xl hover:bg-brand-100 transition whitespace-nowrap flex items-center gap-1.5">
+              <span>⚡ 自動帶入全套釋義</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-bold text-slate-700">音標 (IPA)</label>
+            <button type="button" onclick="app.autoLookupPhoneticOnly()" class="text-[11px] text-brand-600 font-semibold hover:underline">
+              <i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i> 單獨帶入音標
+            </button>
+          </div>
+          <input type="text" id="input-phonetic" placeholder="例如: /rɪˈzɪl.jənt/" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-mono focus:border-brand-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">中文釋義 *</label>
+          <input type="text" id="input-meaning" required placeholder="例如: adj. 有適應力的；韌性強的" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold focus:border-brand-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">實用例句</label>
+          <textarea id="input-sentence" rows="2" placeholder="例如: She is resilient enough to deal with any hardships." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:border-brand-600 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="app.closeWordModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50">取消</button>
+          <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold hover:bg-brand-700 shadow-xs">儲存單字</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="modal-auth" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="auth-modal-title" class="text-lg font-bold text-slate-900">登入帳號</h3>
+        <button onclick="app.closeAuthModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="flex gap-2 mb-4">
+        <button type="button" id="auth-tab-login" onclick="app.switchAuthMode('login')" class="flex-1 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white">登入</button>
+        <button type="button" id="auth-tab-register" onclick="app.switchAuthMode('register')" class="flex-1 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600">註冊</button>
+      </div>
+      <form onsubmit="app.submitAuth(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email</label>
+          <input type="email" id="auth-email" required placeholder="you@example.com" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:border-brand-600 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">密碼（至少 6 碼）</label>
+          <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:border-brand-600 focus:outline-none">
+        </div>
+        <p id="auth-error" class="text-xs text-rose-600 hidden"></p>
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl transition">登入</button>
+      </form>
+      <div id="auth-logged-in-panel" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-2">
+        <p class="text-xs text-slate-600">目前登入：<span id="auth-current-email" class="font-bold text-slate-800"></span></p>
+        <button type="button" onclick="app.logout()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">登出</button>
+        <button type="button" onclick="app.syncNow()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-xl">立即同步單字到雲端</button>
+      </div>
+      <p class="text-[11px] text-slate-400 mt-4 leading-relaxed">尚未設定 Firebase 時無法登入。請到「設定」貼上 Firebase 專案設定。</p>
+    </div>
+  </div>
+
+  <!-- Bottom Mobile Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-100 z-30 shadow-sm">
+    <div class="max-w-md mx-auto grid grid-cols-4 h-14">
+      <button onclick="app.switchTab('study')" id="nav-study" class="nav-btn flex flex-col items-center justify-center text-brand-600">
+        <i class="fa-solid fa-cards text-lg"></i>
+        <span class="text-[10px] font-bold mt-0.5">每日溫習</span>
+      </button>
+      <button onclick="app.switchTab('quiz')" id="nav-quiz" class="nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-headphones text-lg"></i>
+        <span class="text-[10px] font-bold mt-0.5">聽力測驗</span>
+      </button>
+      <button onclick="app.switchTab('vocab')" id="nav-vocab" class="nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-book-bookmark text-lg"></i>
+        <span class="text-[10px] font-bold mt-0.5">單字庫</span>
+      </button>
+      <button onclick="app.switchTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-gear text-lg"></i>
+        <span class="text-[10px] font-bold mt-0.5">設定</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    // Register Service Worker for PWA Offline & Installation
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swCode = `
+          self.addEventListener('install', e => self.skipWaiting());
+          self.addEventListener('activate', e => self.clients.claim());
+          self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+        `;
+        const blob = new Blob([swCode], { type: 'text/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+      });
+    }
+
+    // Initial Seed High-frequency Vocabulary (10 Words)
+    const SEED_WORDS = [
+      { id: '1', word: 'resilient', phonetic: '/rɪˈzɪl.jənt/', meaning: 'adj. 有適應力的；強韌的', sentence: 'She is resilient enough to handle any difficulties.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '2', word: 'meticulous', phonetic: '/məˈtɪk.jə.ləs/', meaning: 'adj. 嚴謹的；縝密的', sentence: 'He was meticulous about keeping his accounts accurate.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '3', word: 'pragmatic', phonetic: '/præɡˈmæt.ɪk/', meaning: 'adj. 務實的；注重實效的', sentence: 'We need a pragmatic approach to solve this problem.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '4', word: 'eloquent', phonetic: '/ˈel.ə.kwənt/', meaning: 'adj. 雄辯的；有說服力的', sentence: 'She gave an eloquent speech at the conference.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '5', word: 'ephemeral', phonetic: '/ɪˈfem.ər.əl/', meaning: 'adj. 短暫的；轉瞬即逝的', sentence: 'Fame in the digital age is often ephemeral.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '6', word: 'scrutinize', phonetic: '/ˈskruː.t̬ən.aɪz/', meaning: 'v. 細察；審視', sentence: 'Inspectors were sent to scrutinize the company books.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '7', word: 'tenacious', phonetic: '/təˈneɪ.ʃəs/', meaning: 'adj. 堅韌的；不屈不撓的', sentence: 'She was tenacious in defending her opinions.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '8', word: 'versatile', phonetic: '/ˈvɝː.sə.t̬əl/', meaning: 'adj. 多才多藝的；多功能的', sentence: 'He is a versatile actor who can play any role.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '9', word: 'candid', phonetic: '/ˈkæn.dɪd/', meaning: 'adj. 率直的；坦誠的', sentence: 'To be candid, I think your plan needs more work.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 },
+      { id: '10', word: 'catalyst', phonetic: '/ˈkæt̬.əl.ɪst/', meaning: 'n. 催化劑；促進因素', sentence: 'The new policy acted as a catalyst for economic growth.', level: 0, nextReviewDate: getTodayString(), quizCorrects: 0 }
+    ];
+
+    function getTodayString() {
+      const today = new Date();
+      return today.toISOString().split('T')[0];
+    }
+
+    function addDaysToDate(dateStr, days) {
+      const date = new Date(dateStr);
+      date.setDate(date.getDate() + days);
+      return date.toISOString().split('T')[0];
+    }
+
+    // Main App Class
+    class VocabApp {
+      constructor() {
+        this.words = [];
+        this.todayQueue = [];
+        this.currentStudyIdx = 0;
+        this.completedCountToday = 0;
+
+        this.dailyNewTarget = parseInt(localStorage.getItem('srs_daily_new_target')) || 10;
+
+        this.quizWords = [];
+        this.currentQuizIdx = 0;
+        this.quizScore = 0;
+        this.quizScope = 'all'; // 'due', 'learned', 'all', 'custom'
+        this.customQuizWordIds = [];
+
+        this.selectedVoice = null;
+        this.recognition = null;
+        this.whisperApiKey = localStorage.getItem('srs_whisper_key') || '';
+
+        // Firebase / cloud auth
+        this.firebaseApp = null;
+        this.firebaseAuth = null;
+        this.firebaseDb = null;
+        this.currentUser = null;
+        this.authMode = 'login'; // login | register
+        this.cloudSyncing = false;
+
+        // Audio Context for unlocking on touch
+        this.audioCtx = null;
+
+        // Reminder settings
+        this.reminderEnabled = localStorage.getItem('srs_reminder_enabled') !== 'false';
+        this.reminderTime = localStorage.getItem('srs_reminder') || '20:00';
+        this.lastTriggeredDate = '';
+
+        this.init();
+      }
+
+      saveWords() {
+        localStorage.setItem('srs_words', JSON.stringify(this.words));
+        // Debounced cloud sync when logged in
+        if (this.currentUser && this.firebaseDb) {
+          clearTimeout(this._cloudSaveTimer);
+          this._cloudSaveTimer = setTimeout(() => this.pushWordsToCloud(), 800);
+        }
+      }
+
+      init() {
+        const savedWords = localStorage.getItem('srs_words');
+        if (savedWords) {
+          try {
+            this.words = JSON.parse(savedWords);
+          } catch (e) {
+            this.words = SEED_WORDS;
+            this.saveWords();
+          }
+        } else {
+          this.words = SEED_WORDS;
+          this.saveWords();
+        }
+
+        const apiKeyInput = document.getElementById('whisper-api-key');
+        if (apiKeyInput) apiKeyInput.value = this.whisperApiKey;
+
+        // Restore target settings UI
+        const studyTargetSel = document.getElementById('study-target-select');
+        if (studyTargetSel) studyTargetSel.value = this.dailyNewTarget.toString();
+        const settingsTargetSel = document.getElementById('settings-target-select');
+        if (settingsTargetSel) settingsTargetSel.value = this.dailyNewTarget.toString();
+
+        // Restore reminder settings UI
+        const timeInput = document.getElementById('reminder-time');
+        if (timeInput) timeInput.value = this.reminderTime;
+
+        const toggleInput = document.getElementById('reminder-toggle');
+        if (toggleInput) {
+          toggleInput.checked = this.reminderEnabled;
+          this.updateReminderToggleLabel(this.reminderEnabled);
+        }
+
+        this.updateNotificationPermissionUI();
+        this.initAudioContextUnlock();
+        this.initVoices();
+        this.initSpeechRec();
+        this.initStudyQueue();
+        this.renderWordsTable();
+        this.setupCardFlip();
+        this.startReminderScheduler();
+        this.initFirebaseFromStorage();
+      }
+
+      showToast(title, message, icon = 'fa-circle-info', isError = false) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-lg border transition-all duration-300 transform translate-y-2 opacity-0 ${
+          isError ? 'bg-rose-900 text-white border-rose-700' : 'bg-slate-900 text-white border-slate-800'
+        }`;
+        toast.innerHTML = `
+          <div class="w-8 h-8 rounded-full ${isError ? 'bg-rose-800' : 'bg-brand-600'} flex items-center justify-center shrink-0">
+            <i class="fa-solid ${icon} text-sm"></i>
+          </div>
+          <div class="flex-1 text-xs">
+            <h4 class="font-bold text-slate-100">${title}</h4>
+            <p class="text-slate-300 mt-0.5">${message}</p>
+          </div>
+          <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      initAudioContextUnlock() {
+        const unlock = () => {
+          if (!this.audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+              this.audioCtx = new AudioContext();
+            }
+          }
+          if (this.audioCtx && this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+          }
+          document.removeEventListener('click', unlock);
+          document.removeEventListener('touchstart', unlock);
+        };
+        document.addEventListener('click', unlock);
+        document.addEventListener('touchstart', unlock);
+      }
+
+      initVoices() {
+        if (!('speechSynthesis' in window)) return;
+
+        const loadVoiceList = () => {
+          const voices = window.speechSynthesis.getVoices();
+          const voiceSelect = document.getElementById('voice-select');
+          if (!voiceSelect) return;
+
+          voiceSelect.innerHTML = '<option value="">自動選擇系統預設女聲 (Female Voice)</option>';
+          
+          const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+          englishVoices.forEach((v) => {
+            const opt = document.createElement('option');
+            opt.value = v.name;
+            opt.innerText = `${v.name} (${v.lang})`;
+            voiceSelect.appendChild(opt);
+          });
+
+          // Default female English voice selection
+          const prefVoice = englishVoices.find(v => 
+            v.name.toLowerCase().includes('female') || 
+            v.name.toLowerCase().includes('samantha') || 
+            v.name.toLowerCase().includes('zira') ||
+            v.name.toLowerCase().includes('victoria') ||
+            v.name.toLowerCase().includes('google us english')
+          );
+          if (prefVoice) {
+            this.selectedVoice = prefVoice;
+          }
+        };
+
+        loadVoiceList();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+          window.speechSynthesis.onvoiceschanged = loadVoiceList;
+        }
+      }
+
+      changeVoice() {
+        const voiceSelect = document.getElementById('voice-select');
+        if (!voiceSelect || !('speechSynthesis' in window)) return;
+        const selectedName = voiceSelect.value;
+        const voices = window.speechSynthesis.getVoices();
+        this.selectedVoice = voices.find(v => v.name === selectedName) || null;
+      }
+
+      testVoice() {
+        this.speakText('Hello! SRS Vocab Master is ready to help you learn English.');
+      }
+
+      speakText(text) {
+        if (!('speechSynthesis' in window) || !text) return;
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+
+        if (this.selectedVoice) {
+          utterance.voice = this.selectedVoice;
+        }
+
+        window.speechSynthesis.speak(utterance);
+      }
+
+      speakCurrentWord() {
+        if (this.currentStudyIdx < this.todayQueue.length) {
+          this.speakText(this.todayQueue[this.currentStudyIdx].word);
+        }
+      }
+
+      speakSentence() {
+        if (this.currentStudyIdx < this.todayQueue.length) {
+          const sentence = this.todayQueue[this.currentStudyIdx].sentence;
+          if (sentence) this.speakText(sentence);
+        }
+      }
+
+      createSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return null;
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.continuous = false;
+        recognition.maxAlternatives = 5;
+
+        recognition.onstart = () => {
+          this.isListening = true;
+          const btn = document.getElementById('btn-mic');
+          const status = document.getElementById('rec-status');
+          if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>聆聽中...</span>';
+            btn.classList.add('ring-2', 'ring-brand-300');
+          }
+          if (status) status.innerHTML = '<span class="text-brand-300">🎙️ 請清楚朗讀當前單字...</span>';
+        };
+
+        recognition.onresult = (event) => {
+          const status = document.getElementById('rec-status');
+          const currentWord = (this.todayQueue[this.currentStudyIdx]?.word || '').toLowerCase().trim();
+          if (!currentWord) {
+            if (status) status.innerText = '目前沒有可檢查的單字';
+            return;
+          }
+
+          // Collect all alternatives
+          const alts = [];
+          try {
+            const result = event.results[0];
+            for (let i = 0; i < result.length; i++) {
+              alts.push((result[i].transcript || '').trim().toLowerCase());
+            }
+          } catch (e) {}
+
+          const normalize = (s) => (s || '')
+            .toLowerCase()
+            .replace(/[.,!?;:'"\-_/\\()]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+          const target = normalize(currentWord);
+          let matched = false;
+          let best = alts[0] || '';
+
+          for (const raw of alts) {
+            const t = normalize(raw);
+            if (!t) continue;
+            // Exact, contains, or without spaces/hyphens
+            if (
+              t === target ||
+              t.includes(target) ||
+              target.includes(t) ||
+              t.replace(/\s/g, '') === target.replace(/\s/g, '') ||
+              t.split(' ').includes(target)
+            ) {
+              matched = true;
+              best = raw;
+              break;
+            }
+          }
+
+          if (matched) {
+            if (status) status.innerHTML = `<span class="text-emerald-400 font-bold">✅ 發音正確！識別到：「${best}」</span>`;
+          } else {
+            if (status) status.innerHTML = `<span class="text-amber-400">⚠️ 識別：「${best || '（無）'}」（標準: ${currentWord}）</span>`;
+          }
+        };
+
+        recognition.onerror = (event) => {
+          this.isListening = false;
+          const status = document.getElementById('rec-status');
+          const err = (event && event.error) || '';
+          let msg = '❌ 麥克風識別失敗，請再試一次。';
+          if (err === 'not-allowed' || err === 'service-not-allowed') {
+            msg = '❌ 未獲得麥克風權限。請在瀏覽器網址列允許麥克風，並使用 HTTPS 或本機開啟。';
+          } else if (err === 'no-speech') {
+            msg = '❌ 沒有偵測到語音，請靠近麥克風再說一次。';
+          } else if (err === 'audio-capture') {
+            msg = '❌ 找不到麥克風裝置，請檢查硬體或系統設定。';
+          } else if (err === 'network') {
+            msg = '❌ 語音服務需要網路連線，請確認已連上網路。';
+          } else if (err === 'aborted') {
+            msg = '已取消聆聽。';
+          } else if (err === 'language-not-supported') {
+            msg = '❌ 此瀏覽器不支援英文語音識別。';
+          }
+          if (status) status.innerText = msg;
+          this.resetMicBtn();
+        };
+
+        recognition.onend = () => {
+          this.isListening = false;
+          this.resetMicBtn();
+        };
+
+        return recognition;
+      }
+
+      initSpeechRec() {
+        this.isListening = false;
+        this.recognition = this.createSpeechRecognition();
+      }
+
+      resetMicBtn() {
+        const btn = document.getElementById('btn-mic');
+        if (btn) {
+          btn.innerHTML = '<i class="fa-solid fa-microphone"></i> <span>開始朗讀</span>';
+          btn.classList.remove('ring-2', 'ring-brand-300');
+        }
+      }
+
+      async toggleSpeechRec() {
+        const status = document.getElementById('rec-status');
+
+        // Browser support check
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          this.showToast('語音識別不支援', '目前瀏覽器不支援語音識別。建議使用 Chrome / Edge。也可按「模擬試讀」測試流程。', 'fa-microphone-slash', true);
+          if (status) status.innerText = '❌ 此瀏覽器不支援語音識別（建議 Chrome）';
+          return;
+        }
+
+        // Secure context check (required by most browsers)
+        if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+          this.showToast('需要安全連線', '語音識別需在 HTTPS 網站或本機檔案環境使用。', 'fa-lock', true);
+          if (status) status.innerText = '❌ 請用 HTTPS 或本機開啟此頁，才能使用麥克風';
+          return;
+        }
+
+        // Stop if already listening
+        if (this.isListening && this.recognition) {
+          try { this.recognition.stop(); } catch (e) {}
+          this.isListening = false;
+          this.resetMicBtn();
+          if (status) status.innerText = '已停止聆聽';
+          return;
+        }
+
+        // Recreate instance each time for reliability (some browsers don't allow reuse)
+        this.recognition = this.createSpeechRecognition();
+        if (!this.recognition) {
+          this.showToast('語音識別不支援', '無法建立語音識別，請改用 Chrome。', 'fa-microphone-slash', true);
+          return;
+        }
+
+        // Try to ensure mic permission
+        try {
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Immediately stop tracks; we only needed permission
+            stream.getTracks().forEach(t => t.stop());
+          }
+        } catch (permErr) {
+          if (status) status.innerText = '❌ 麥克風權限被拒絕，請到瀏覽器設定允許麥克風。';
+          this.showToast('麥克風權限', '請允許此網站使用麥克風後再試。', 'fa-microphone-slash', true);
+          return;
+        }
+
+        try {
+          this.recognition.start();
+        } catch (e) {
+          // InvalidStateError: already started → stop and retry once
+          try {
+            this.recognition.stop();
+          } catch (e2) {}
+          setTimeout(() => {
+            try {
+              this.recognition = this.createSpeechRecognition();
+              this.recognition && this.recognition.start();
+            } catch (e3) {
+              if (status) status.innerText = '❌ 無法啟動語音識別，請重新整理頁面再試。';
+              this.resetMicBtn();
+            }
+          }, 300);
+        }
+      }
+
+      simulateSpeechRec() {
+        const status = document.getElementById('rec-status');
+        if (!status) return;
+
+        status.innerHTML = '<span class="text-brand-400"><i class="fa-solid fa-spinner fa-spin"></i> 模擬語音比對中...</span>';
+        
+        setTimeout(() => {
+          const currentWord = this.todayQueue[this.currentStudyIdx]?.word || 'resilient';
+          status.innerHTML = `<span class="text-emerald-400 font-bold">🎉 模擬測試成功！發音完美符合 「${currentWord}」</span>`;
+        }, 1200);
+      }
+
+      saveWhisperKey() {
+        const input = document.getElementById('whisper-api-key');
+        if (!input) return;
+        this.whisperApiKey = input.value.trim();
+        localStorage.setItem('srs_whisper_key', this.whisperApiKey);
+        this.showToast('金鑰設定已儲存', 'OpenAI Whisper API 金鑰已成功設定。', 'fa-key');
+      }
+
+      updateNotificationPermissionUI() {
+        if ('Notification' in window && Notification.permission === 'default') {
+          // Prepared for permission requests
+        }
+      }
+
+      updateReminderToggleLabel(enabled) {
+        const label = document.getElementById('reminder-toggle-label');
+        if (label) {
+          label.innerText = enabled ? '開啟提醒' : '關閉提醒';
+        }
+      }
+
+      toggleReminder(enabled) {
+        this.reminderEnabled = enabled;
+        localStorage.setItem('srs_reminder_enabled', enabled);
+        this.updateReminderToggleLabel(enabled);
+
+        if (enabled && 'Notification' in window && Notification.permission !== 'granted') {
+          Notification.requestPermission();
+        }
+
+        this.showToast(enabled ? '提醒已開啟' : '提醒已關閉', enabled ? '每日溫習提醒已啟用。' : '每日溫習提醒已停用。', 'fa-bell');
+      }
+
+      startReminderScheduler() {
+        setInterval(() => {
+          if (!this.reminderEnabled) return;
+          const now = new Date();
+          const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          const todayStr = getTodayString();
+
+          if (timeStr === this.reminderTime && this.lastTriggeredDate !== todayStr) {
+            this.lastTriggeredDate = todayStr;
+            this.triggerDailyReminder();
+          }
+        }, 30000);
+      }
+
+      triggerDailyReminder() {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('SRS Vocab Master - 溫習提醒', {
+            body: '⏰ 溫習時間到了！快來完成今天的英文單字卡吧！',
+            icon: 'https://cdn-icons-png.flaticon.com/512/3815/3815321.png'
+          });
+        } else {
+          this.showToast('⏰ 溫習提醒', '溫習時間到了！快來完成今天的英文單字卡吧！', 'fa-clock');
+        }
+      }
+
+      changeDailyNewTarget(val) {
+        const num = parseInt(val, 10);
+        if (isNaN(num) || num <= 0) return;
+
+        this.dailyNewTarget = num;
+        localStorage.setItem('srs_daily_new_target', num);
+
+        const studyTargetSel = document.getElementById('study-target-select');
+        if (studyTargetSel) studyTargetSel.value = num.toString();
+        const settingsTargetSel = document.getElementById('settings-target-select');
+        if (settingsTargetSel) settingsTargetSel.value = num.toString();
+
+        this.completedCountToday = 0;
+        this.initStudyQueue();
+
+        this.showToast('🎯 目標已更新', `每日新詞學習目標已調整為 ${num} 個單字！`, 'fa-bullseye', false);
+      }
+
+      initStudyQueue() {
+        const todayStr = getTodayString();
+        const dueWords = this.words.filter(w => w.level > 0 && w.nextReviewDate <= todayStr);
+        const newWords = this.words.filter(w => w.level === 0).slice(0, this.dailyNewTarget);
+
+        this.todayQueue = [...dueWords, ...newWords];
+        this.currentStudyIdx = 0;
+        this.renderCard();
+      }
+
+      setupCardFlip() {
+        const card = document.getElementById('flashcard');
+        if (!card) return;
+        card.addEventListener('click', () => {
+          card.classList.toggle('rotate-y-180');
+        });
+      }
+
+      renderCard() {
+        const total = this.todayQueue.length;
+        document.getElementById('study-progress-text').innerText = `${this.completedCountToday} / ${total} 個`;
+        document.getElementById('header-progress').innerText = `${this.completedCountToday}/${total}`;
+        
+        const pct = total === 0 ? 100 : (this.completedCountToday / total) * 100;
+        document.getElementById('study-progress-bar').style.width = `${pct}%`;
+
+        if (this.currentStudyIdx >= total) {
+          document.getElementById('flashcard-container').classList.add('hidden');
+          document.getElementById('study-controls').classList.add('hidden');
+          document.getElementById('study-complete').classList.remove('hidden');
+          return;
+        }
+
+        const word = this.todayQueue[this.currentStudyIdx];
+        document.getElementById('card-word').innerText = word.word;
+        document.getElementById('card-phonetic').innerText = word.phonetic || '/.../';
+        document.getElementById('card-back-word').innerText = word.word;
+        document.getElementById('card-meaning').innerText = word.meaning;
+        document.getElementById('card-sentence').innerText = word.sentence || '尚無實用例句';
+
+        const stageTag = document.getElementById('card-stage-tag');
+        const typeTag = document.getElementById('card-type-tag');
+
+        if (word.level === 0) {
+          typeTag.innerText = 'NEW';
+          typeTag.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700';
+          stageTag.innerText = '複習週期: 0天';
+        } else {
+          typeTag.innerText = `S-${word.level}`;
+          typeTag.className = 'px-3 py-1 rounded-full text-xs font-bold bg-brand-100 text-brand-700';
+          stageTag.innerText = `階段: ${word.level} 級`;
+        }
+
+        document.getElementById('flashcard').classList.remove('rotate-y-180');
+      }
+
+      answerCard(isCorrect) {
+        // 每日溫習只翻到下一個生字，不改變記憶階段（階段升級改由聽力測驗答對 3 次觸發）
+        if (this.currentStudyIdx >= this.todayQueue.length) return;
+
+        this.completedCountToday++;
+        this.currentStudyIdx++;
+        this.renderCard();
+      }
+
+      initQuizQueue() {
+        this.updateQuizScopeUI();
+        let baseList = [];
+        const todayStr = getTodayString();
+
+        if (this.quizScope === 'due') {
+          baseList = this.words.filter(w => w.level > 0 && w.nextReviewDate <= todayStr);
+        } else if (this.quizScope === 'learned') {
+          baseList = this.words.filter(w => w.level > 0);
+        } else if (this.quizScope === 'custom') {
+          baseList = this.words.filter(w => this.customQuizWordIds.includes(w.id));
+        } else {
+          baseList = [...this.words];
+        }
+
+        this.quizWords = [...baseList].sort(() => 0.5 - Math.random());
+        this.currentQuizIdx = 0;
+        this.quizScore = 0;
+        document.getElementById('quiz-score').innerText = this.quizScore;
+        this.renderQuizQuestion();
+      }
+
+      setQuizScope(scope) {
+        this.quizScope = scope;
+        this.initQuizQueue();
+      }
+
+      updateQuizScopeUI() {
+        ['due', 'learned', 'all', 'custom'].forEach(s => {
+          const btn = document.getElementById(`btn-scope-${s}`);
+          if (!btn) return;
+          if (this.quizScope === s) {
+            btn.className = 'quiz-scope-btn px-2.5 py-2 text-xs font-semibold rounded-xl border bg-brand-600 text-white border-brand-600 shadow-xs transition';
+          } else {
+            btn.className = 'quiz-scope-btn px-2.5 py-2 text-xs font-semibold rounded-xl border bg-white border-slate-200 text-slate-700 hover:bg-slate-100 transition';
+          }
+        });
+
+        const badge = document.getElementById('custom-count-badge');
+        if (this.customQuizWordIds.length > 0) {
+          badge.innerText = this.customQuizWordIds.length;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+
+        const info = document.getElementById('quiz-scope-info');
+        if (info) {
+          const scopeTextMap = {
+            'due': '目前範圍：今日重溫',
+            'learned': '目前範圍：已學單字',
+            'all': '目前範圍：全部單字',
+            'custom': `目前範圍：自選單字 (${this.customQuizWordIds.length}個)`
+          };
+          info.innerText = scopeTextMap[this.quizScope] || '目前範圍：全部單字';
+        }
+      }
+
+      getCustomQuizFilteredWords() {
+        const filter = document.getElementById('custom-date-filter')?.value || 'all';
+        const todayStr = getTodayString();
+        const specificDate = document.getElementById('custom-date-picker')?.value || '';
+
+        return this.words.filter(w => {
+          const d = w.nextReviewDate || todayStr;
+          if (filter === 'all') return true;
+          if (filter === 'due') return d <= todayStr;
+          if (filter === 'today') return d === todayStr;
+          if (filter === 'future') return d > todayStr;
+          if (filter === 'specific') return specificDate ? d === specificDate : true;
+          return true;
+        });
+      }
+
+      buildCustomDateChips() {
+        const container = document.getElementById('custom-date-chips');
+        if (!container) return;
+        const todayStr = getTodayString();
+        const dateCount = {};
+        this.words.forEach(w => {
+          const d = w.nextReviewDate || todayStr;
+          dateCount[d] = (dateCount[d] || 0) + 1;
+        });
+        const dates = Object.keys(dateCount).sort();
+        if (dates.length === 0) {
+          container.innerHTML = '';
+          return;
+        }
+        const activeDate = (document.getElementById('custom-date-filter')?.value === 'specific')
+          ? (document.getElementById('custom-date-picker')?.value || '')
+          : '';
+        container.innerHTML = dates.map(d => {
+          const isDue = d <= todayStr;
+          const label = d === todayStr ? `${d} 今日` : (d < todayStr ? `${d} 過期` : d);
+          const active = activeDate === d;
+          const cls = active
+            ? 'bg-brand-600 text-white border-brand-600'
+            : (isDue ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100');
+          return `<button type="button" onclick="app.selectCustomReviewDate('${d}')" class="px-2 py-0.5 rounded-lg border text-[10px] font-semibold transition ${cls}">${label} (${dateCount[d]})</button>`;
+        }).join('');
+      }
+
+      selectCustomReviewDate(dateStr) {
+        const filterSel = document.getElementById('custom-date-filter');
+        const picker = document.getElementById('custom-date-picker');
+        if (filterSel) filterSel.value = 'specific';
+        if (picker) {
+          picker.value = dateStr;
+          picker.classList.remove('hidden');
+        }
+        this.onCustomDateFilterChange();
+      }
+
+      onCustomDateFilterChange() {
+        const filter = document.getElementById('custom-date-filter')?.value || 'all';
+        const picker = document.getElementById('custom-date-picker');
+        if (picker) {
+          if (filter === 'specific') {
+            picker.classList.remove('hidden');
+            if (!picker.value) picker.value = getTodayString();
+          } else {
+            picker.classList.add('hidden');
+          }
+        }
+        this.buildCustomDateChips();
+        // Keep currently checked ids before re-render
+        const checkedIds = Array.from(document.querySelectorAll('.custom-word-checkbox:checked')).map(cb => cb.getAttribute('data-id'));
+        this.renderCustomQuizList(checkedIds);
+      }
+
+      renderCustomQuizList(preserveCheckedIds = null) {
+        const listContainer = document.getElementById('custom-quiz-word-list');
+        if (!listContainer) return;
+        listContainer.innerHTML = '';
+
+        const checkedSet = new Set(
+          preserveCheckedIds !== null
+            ? preserveCheckedIds
+            : (this.customQuizWordIds || [])
+        );
+
+        const filtered = this.getCustomQuizFilteredWords();
+        const todayStr = getTodayString();
+
+        if (filtered.length === 0) {
+          listContainer.innerHTML = '<p class="text-center text-xs text-slate-400 py-6">此篩選條件下沒有單字</p>';
+          this.updateCustomModalCount();
+          return;
+        }
+
+        // Sort by nextReviewDate then word
+        filtered.sort((a, b) => {
+          const da = a.nextReviewDate || '';
+          const db = b.nextReviewDate || '';
+          if (da !== db) return da.localeCompare(db);
+          return (a.word || '').localeCompare(b.word || '');
+        });
+
+        filtered.forEach(w => {
+          const isChecked = checkedSet.has(w.id);
+          const reviewDate = w.nextReviewDate || todayStr;
+          const isDue = reviewDate <= todayStr;
+          const item = document.createElement('label');
+          item.className = 'flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 cursor-pointer border border-transparent text-xs transition gap-2';
+          item.innerHTML = `
+            <div class="flex items-center space-x-2.5 min-w-0 flex-1">
+              <input type="checkbox" data-id="${w.id}" ${isChecked ? 'checked' : ''} onchange="app.updateCustomModalCount()" class="custom-word-checkbox rounded text-brand-600 focus:ring-brand-500 w-4 h-4 shrink-0">
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="font-bold text-slate-800">${w.word}</span>
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold ${w.level === 0 ? 'bg-amber-100 text-amber-700' : 'bg-brand-50 text-brand-600'}">
+                    ${w.level === 0 ? 'NEW' : `S-${w.level}`}
+                  </span>
+                </div>
+                <div class="text-slate-400 truncate">${w.meaning || ''}</div>
+              </div>
+            </div>
+            <span class="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${isDue ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-500'}" title="下次溫習日期">
+              ${reviewDate}${isDue && reviewDate < todayStr ? ' (過期)' : (reviewDate === todayStr ? ' (今日)' : '')}
+            </span>
+          `;
+          listContainer.appendChild(item);
+        });
+
+        this.updateCustomModalCount();
+      }
+
+      openCustomQuizModal() {
+        const modal = document.getElementById('modal-custom-quiz');
+        const filterSel = document.getElementById('custom-date-filter');
+        if (filterSel) filterSel.value = 'all';
+        const picker = document.getElementById('custom-date-picker');
+        if (picker) {
+          picker.value = getTodayString();
+          picker.classList.add('hidden');
+        }
+        this.buildCustomDateChips();
+        this.renderCustomQuizList(this.customQuizWordIds || []);
+        modal.classList.remove('hidden');
+      }
+
+      closeCustomQuizModal() {
+        document.getElementById('modal-custom-quiz').classList.add('hidden');
+      }
+
+      selectAllCustomQuiz(select) {
+        // Only affect currently visible (filtered) checkboxes
+        document.querySelectorAll('.custom-word-checkbox').forEach(cb => cb.checked = select);
+        this.updateCustomModalCount();
+      }
+
+      updateCustomModalCount() {
+        const count = document.querySelectorAll('.custom-word-checkbox:checked').length;
+        const totalVisible = document.querySelectorAll('.custom-word-checkbox').length;
+        document.getElementById('custom-selected-count').innerText = count;
+        document.getElementById('custom-total-count').innerText = totalVisible;
+      }
+
+      confirmCustomQuizSelection() {
+        const selectedIds = Array.from(document.querySelectorAll('.custom-word-checkbox:checked')).map(cb => cb.getAttribute('data-id'));
+        if (selectedIds.length === 0) {
+          alert('請至少選擇一個單字！');
+          return;
+        }
+        this.customQuizWordIds = selectedIds;
+        this.closeCustomQuizModal();
+        this.setQuizScope('custom');
+      }
+
+      renderQuizQuestion() {
+        const activeCard = document.getElementById('quiz-active-card');
+        const emptyView = document.getElementById('quiz-empty');
+
+        if (this.currentQuizIdx >= this.quizWords.length) {
+          activeCard.classList.add('hidden');
+          emptyView.classList.remove('hidden');
+          document.getElementById('quiz-empty-text').innerText = this.quizWords.length === 0 ? '目前範圍無可用單字，請切換測驗範圍。' : ' 🎉 恭喜！您已完成本次測驗！';
+          return;
+        }
+
+        activeCard.classList.remove('hidden');
+        emptyView.classList.add('hidden');
+
+        const current = this.quizWords[this.currentQuizIdx];
+        document.getElementById('quiz-meaning-hint').innerText = `提示釋義: ${current.meaning}`;
+        document.getElementById('quiz-input').value = '';
+        document.getElementById('quiz-feedback').classList.add('hidden');
+
+        this.playQuizAudio();
+      }
+
+      playQuizAudio() {
+        const current = this.quizWords[this.currentQuizIdx];
+        if (current) this.speakText(current.word);
+      }
+
+      submitQuiz(e) {
+        e.preventDefault();
+        const input = document.getElementById('quiz-input').value.trim().toLowerCase();
+        const current = this.quizWords[this.currentQuizIdx];
+        const feedback = document.getElementById('quiz-feedback');
+
+        if (!current) return;
+
+        // Ensure quizCorrects field exists
+        if (typeof current.quizCorrects !== 'number') current.quizCorrects = 0;
+
+        const intervals = [1, 2, 6, 14, 30];
+        feedback.classList.remove('hidden');
+
+        if (input === current.word.toLowerCase()) {
+          this.quizScore += 10;
+          document.getElementById('quiz-score').innerText = this.quizScore;
+          current.quizCorrects += 1;
+
+          if (current.quizCorrects >= 3) {
+            // 答對 3 次 → 進入下一個記憶階段
+            current.level = Math.min((current.level || 0) + 1, 5);
+            const daysToAdd = intervals[current.level - 1] || 30;
+            current.nextReviewDate = addDaysToDate(getTodayString(), daysToAdd);
+            current.quizCorrects = 0;
+            this.saveWords();
+            feedback.className = "p-4 rounded-2xl max-w-md mx-auto text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200";
+            feedback.innerText = `🎉 連續答對 3 次！已升級至 S-${current.level}，下次溫習：${current.nextReviewDate}`;
+          } else {
+            this.saveWords();
+            feedback.className = "p-4 rounded-2xl max-w-md mx-auto text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200";
+            feedback.innerText = `✨ 答對了！進度 ${current.quizCorrects}/3 （再對 ${3 - current.quizCorrects} 次即可升級）`;
+          }
+        } else {
+          // 答錯：重置累計正確次數，並退回 S-1
+          current.quizCorrects = 0;
+          current.level = 1;
+          current.nextReviewDate = addDaysToDate(getTodayString(), 1);
+          this.saveWords();
+          feedback.className = "p-4 rounded-2xl max-w-md mx-auto text-sm font-semibold bg-rose-50 text-rose-700 border border-rose-200";
+          feedback.innerText = `❌ 拼寫錯誤！正確拼法是: ${current.word}（已重置進度並列入 S-1）`;
+        }
+
+        setTimeout(() => {
+          this.currentQuizIdx++;
+          this.renderQuizQuestion();
+        }, 2000);
+      }
+
+      renderWordsTable() {
+        const body = document.getElementById('vocab-table-body');
+        const query = (document.getElementById('vocab-search')?.value || '').toLowerCase();
+        if (!body) return;
+        body.innerHTML = '';
+
+        const filtered = this.words.filter(w =>
+          (w.word || '').toLowerCase().includes(query) ||
+          (w.meaning || '').includes(query)
+        );
+
+        if (filtered.length === 0) {
+          body.innerHTML = '<p class="text-center text-xs text-slate-400 py-8">沒有符合的單字</p>';
+          return;
+        }
+
+        filtered.forEach(w => {
+          const stageLabel = w.level === 0
+            ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-700 font-bold rounded text-[10px]">NEW</span>'
+            : `<span class="px-2 py-0.5 bg-brand-50 text-brand-700 font-bold rounded text-[10px]">S-${w.level}</span>`;
+
+          const card = document.createElement('div');
+          card.className = 'border border-slate-200 rounded-2xl p-3.5 bg-white hover:bg-slate-50/80 transition shadow-sm';
+          card.innerHTML = `
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span class="font-bold text-slate-900 text-sm sm:text-base">${w.word || ''}</span>
+                  <span class="text-[11px] text-slate-400 font-mono">${w.phonetic || ''}</span>
+                </div>
+                <p class="mt-1.5 text-sm font-semibold text-slate-700 leading-relaxed break-words whitespace-normal">${w.meaning || ''}</p>
+                <div class="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                  ${stageLabel}
+                  <span class="text-slate-400">下次溫習：${w.nextReviewDate || '今天'}</span>
+                </div>
+              </div>
+              <div class="flex shrink-0 items-center gap-0.5 pt-0.5">
+                <button type="button" onclick="app.openEditWordModal('${w.id}')" class="w-9 h-9 rounded-xl text-slate-400 hover:text-brand-600 hover:bg-brand-50 flex items-center justify-center transition" title="編輯單字">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button type="button" onclick="app.deleteWord('${w.id}')" class="w-9 h-9 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition" title="刪除單字">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          `;
+          body.appendChild(card);
+        });
+      }
+
+      openExportModal() {
+        document.getElementById('modal-export').classList.remove('hidden');
+      }
+
+      closeExportModal() {
+        document.getElementById('modal-export').classList.add('hidden');
+      }
+
+      confirmExport() {
+        const format = document.querySelector('input[name="export-format"]:checked')?.value || 'json';
+        const timestamp = new Date().toISOString().split('T')[0];
+
+        if (format === 'json') {
+          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.words, null, 2));
+          const downloadAnchor = document.createElement('a');
+          downloadAnchor.setAttribute("href", dataStr);
+          downloadAnchor.setAttribute("download", `SRS_Vocab_Backup_${timestamp}.json`);
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          downloadAnchor.remove();
+        } else if (format === 'csv') {
+          const headers = ['Word', 'Phonetic', 'Meaning', 'Sentence', 'Level', 'NextReviewDate', 'QuizCorrects'];
+          const rows = this.words.map(w => [
+            `"${(w.word || '').replace(/"/g, '""')}"`,
+            `"${(w.phonetic || '').replace(/"/g, '""')}"`,
+            `"${(w.meaning || '').replace(/"/g, '""')}"`,
+            `"${(w.sentence || '').replace(/"/g, '""')}"`,
+            w.level || 0,
+            `"${w.nextReviewDate || getTodayString()}"`,
+            w.quizCorrects || 0
+          ]);
+          const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const downloadAnchor = document.createElement('a');
+          downloadAnchor.setAttribute("href", url);
+          downloadAnchor.setAttribute("download", `SRS_Vocab_Backup_${timestamp}.csv`);
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          downloadAnchor.remove();
+        }
+
+        this.closeExportModal();
+      }
+
+      openImportModal() {
+        document.getElementById('import-file-input').value = '';
+        document.getElementById('modal-import').classList.remove('hidden');
+      }
+
+      closeImportModal() {
+        document.getElementById('modal-import').classList.add('hidden');
+      }
+
+      confirmImport() {
+        const fileInput = document.getElementById('import-file-input');
+        const file = fileInput.files[0];
+        if (!file) {
+          alert('請先選擇要匯入的 JSON 或 CSV 檔案！');
+          return;
+        }
+
+        const mode = document.querySelector('input[name="import-mode"]:checked')?.value || 'merge';
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          try {
+            const content = e.target.result;
+            let importedWords = [];
+
+            if (file.name.endsWith('.json')) {
+              importedWords = JSON.parse(content);
+              if (!Array.isArray(importedWords)) throw new Error('Invalid JSON structure');
+            } else if (file.name.endsWith('.csv')) {
+              importedWords = this.parseCSV(content);
+            } else {
+              alert('不支援的檔案格式，請上傳 .json 或 .csv 檔案。');
+              return;
+            }
+
+            importedWords = importedWords.map((item, idx) => ({
+              id: item.id || Date.now().toString() + '_' + idx,
+              word: (item.word || '').trim(),
+              phonetic: item.phonetic || '',
+              meaning: (item.meaning || item.translation || '').trim(),
+              sentence: item.sentence || '',
+              level: typeof item.level === 'number' ? item.level : 0,
+              nextReviewDate: item.nextReviewDate || getTodayString(),
+              quizCorrects: typeof item.quizCorrects === 'number' ? item.quizCorrects : 0
+            })).filter(w => w.word !== '' && w.meaning !== '');
+
+            if (importedWords.length === 0) {
+              alert('檔案中未讀取到有效的單字資料！');
+              return;
+            }
+
+            if (mode === 'overwrite') {
+              this.words = importedWords;
+            } else {
+              const existingWordMap = new Set(this.words.map(w => w.word.toLowerCase()));
+              importedWords.forEach(nw => {
+                if (!existingWordMap.has(nw.word.toLowerCase())) {
+                  this.words.push(nw);
+                  existingWordMap.add(nw.word.toLowerCase());
+                }
+              });
+            }
+
+            this.saveWords();
+            this.renderWordsTable();
+            this.initStudyQueue();
+            this.closeImportModal();
+            alert(`成功匯入 ${importedWords.length} 個單字紀錄！`);
+
+          } catch (err) {
+            alert('檔案解析失敗，請確認檔案格式是否正確。');
+            console.error(err);
+          }
+        };
+
+        reader.readAsText(file);
+      }
+
+      parseCSV(text) {
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        if (lines.length === 0) return [];
+
+        const splitCSVLine = (line) => {
+          const result = [];
+          let start = 0;
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            if (line[i] === '"') {
+              inQuotes = !inQuotes;
+            } else if (line[i] === ',' && !inQuotes) {
+              result.push(line.substring(start, i).trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
+              start = i + 1;
+            }
+          }
+          result.push(line.substring(start).trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
+          return result;
+        };
+
+        const rows = lines.map(splitCSVLine);
+        const firstRow = rows[0].map(c => c.toLowerCase());
+        const hasHeader = firstRow.includes('word') || firstRow.includes('單字') || firstRow.includes('meaning');
+        const dataRows = hasHeader ? rows.slice(1) : rows;
+
+        return dataRows.map((cols, idx) => ({
+          id: Date.now().toString() + '_' + idx,
+          word: cols[0] || '',
+          phonetic: cols[1] || '',
+          meaning: cols[2] || '',
+          sentence: cols[3] || '',
+          level: parseInt(cols[4]) || 0,
+          nextReviewDate: cols[5] || getTodayString(),
+          quizCorrects: parseInt(cols[6]) || 0
+        }));
+      }
+
+      // Extract IPA text from dictionaryapi.dev response (many entries only have audio)
+      extractPhoneticFromDictData(data) {
+        if (!Array.isArray(data)) return '';
+        for (const entry of data) {
+          if (entry.phonetic && entry.phonetic.trim()) return entry.phonetic.trim();
+          if (Array.isArray(entry.phonetics)) {
+            for (const p of entry.phonetics) {
+              if (p && p.text && String(p.text).trim()) return String(p.text).trim();
+            }
+          }
+        }
+        return '';
+      }
+
+      // Fallback: Datamuse ARPAbet -> rough IPA
+      arpaToIpa(arpa) {
+        if (!arpa) return '';
+        const map = {
+          'AA': 'ɑ', 'AE': 'æ', 'AH': 'ʌ', 'AO': 'ɔ', 'AW': 'aʊ', 'AY': 'aɪ',
+          'B': 'b', 'CH': 'tʃ', 'D': 'd', 'DH': 'ð', 'EH': 'ɛ', 'ER': 'ɝ',
+          'EY': 'eɪ', 'F': 'f', 'G': 'ɡ', 'HH': 'h', 'IH': 'ɪ', 'IY': 'i',
+          'JH': 'dʒ', 'K': 'k', 'L': 'l', 'M': 'm', 'N': 'n', 'NG': 'ŋ',
+          'OW': 'oʊ', 'OY': 'ɔɪ', 'P': 'p', 'R': 'r', 'S': 's', 'SH': 'ʃ',
+          'T': 't', 'TH': 'θ', 'UH': 'ʊ', 'UW': 'u', 'V': 'v', 'W': 'w',
+          'Y': 'j', 'Z': 'z', 'ZH': 'ʒ'
+        };
+        const parts = arpa.trim().split(/\s+/).filter(Boolean);
+        let out = '';
+        for (const raw of parts) {
+          const stress = raw.match(/(\d)$/);
+          const base = raw.replace(/\d$/, '');
+          const ipa = map[base] || base.toLowerCase();
+          if (stress && stress[1] === '1') out += 'ˈ' + ipa;
+          else if (stress && stress[1] === '2') out += 'ˌ' + ipa;
+          else out += ipa;
+        }
+        return out ? `/${out}/` : '';
+      }
+
+      async fetchPhoneticFallback(word) {
+        try {
+          const res = await fetch(`https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=r&max=1`).catch(() => null);
+          if (!res || !res.ok) return '';
+          const data = await res.json();
+          if (!Array.isArray(data) || !data.length) return '';
+          const tags = data[0].tags || [];
+          const pronTag = tags.find(t => typeof t === 'string' && t.startsWith('pron:'));
+          if (!pronTag) return '';
+          const arpa = pronTag.replace(/^pron:/, '').trim();
+          return this.arpaToIpa(arpa);
+        } catch (e) {
+          return '';
+        }
+      }
+
+      async autoLookupDict(isExplicit = true) {
+        const wordInput = document.getElementById('input-word').value.trim();
+        if (!wordInput) return;
+
+        const btn = document.getElementById('btn-auto-lookup');
+        if (btn && isExplicit) {
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>搜尋中...';
+          btn.disabled = true;
+        }
+
+        try {
+          let posPrefix = '';
+          let foundExample = '';
+          let foundPhonetic = '';
+
+          // 1. Dictionary API
+          const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(wordInput)}`).catch(() => null);
+          if (dictRes && dictRes.ok) {
+            const data = await dictRes.json();
+            foundPhonetic = this.extractPhoneticFromDictData(data);
+
+            if (Array.isArray(data) && data.length > 0) {
+              const entry = data[0];
+              if (entry.meanings && entry.meanings.length > 0) {
+                const pos = entry.meanings[0].partOfSpeech;
+                const posMap = {
+                  'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.',
+                  'preposition': 'prep.', 'conjunction': 'conj.', 'pronoun': 'pron.'
+                };
+                if (pos && posMap[pos]) posPrefix = posMap[pos] + ' ';
+                else if (pos) posPrefix = `${pos}. `;
+
+                for (const m of entry.meanings) {
+                  for (const def of m.definitions) {
+                    if (def.example && !foundExample) {
+                      foundExample = def.example;
+                      break;
+                    }
+                  }
+                  if (foundExample) break;
+                }
+              }
+            }
+          }
+
+          // 2. Phonetic fallback if dictionary had no IPA text
+          if (!foundPhonetic) {
+            foundPhonetic = await this.fetchPhoneticFallback(wordInput);
+          }
+
+          if (foundPhonetic) {
+            document.getElementById('input-phonetic').value = foundPhonetic;
+          }
+
+          // Example sentence
+          if (foundExample) {
+            foundExample = foundExample.charAt(0).toUpperCase() + foundExample.slice(1);
+            if (!foundExample.endsWith('.')) foundExample += '.';
+            document.getElementById('input-sentence').value = foundExample;
+          } else if (!document.getElementById('input-sentence').value) {
+            document.getElementById('input-sentence').value = `Learning the word "${wordInput}" helps expand your vocabulary.`;
+          }
+
+          // 3. Chinese translation
+          const transRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(wordInput)}&langpair=en|zh-TW`).catch(() => null);
+          if (transRes && transRes.ok) {
+            const transData = await transRes.json();
+            const translatedText = transData.responseData?.translatedText || '';
+            if (translatedText && !translatedText.toLowerCase().includes('quota')) {
+              const hasPos = /^[a-z]+\.\s/i.test(translatedText);
+              const finalMeaning = (posPrefix && !hasPos) ? `${posPrefix}${translatedText}` : translatedText;
+              document.getElementById('input-meaning').value = finalMeaning;
+            }
+          }
+
+          if (isExplicit) {
+            const phoneticNote = foundPhonetic ? '音標、' : '';
+            this.showToast('自動帶入完成', `已盡力補全「${wordInput}」的${phoneticNote}中文釋義與例句。`, 'fa-wand-magic-sparkles');
+          }
+
+        } catch (err) {
+          console.error('Auto lookup error:', err);
+          if (isExplicit) {
+            this.showToast('自動帶入失敗', '請檢查網路連線或手動輸入。', 'fa-triangle-exclamation', true);
+          }
+        } finally {
+          if (btn && isExplicit) {
+            btn.innerHTML = '⚡ 自動帶入全套釋義';
+            btn.disabled = false;
+          }
+        }
+      }
+
+      async autoLookupPhoneticOnly() {
+        const word = document.getElementById('input-word').value.trim();
+        if (!word) return;
+        try {
+          let phonetic = '';
+          const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`).catch(() => null);
+          if (res && res.ok) {
+            const data = await res.json();
+            phonetic = this.extractPhoneticFromDictData(data);
+          }
+          if (!phonetic) {
+            phonetic = await this.fetchPhoneticFallback(word);
+          }
+          if (phonetic) {
+            document.getElementById('input-phonetic').value = phonetic;
+            this.showToast('音標已帶入', phonetic, 'fa-wand-magic-sparkles');
+          } else {
+            this.showToast('找不到音標', '此單字暫無可用音標資料，請手動輸入。', 'fa-triangle-exclamation', true);
+          }
+        } catch (e) {
+          this.showToast('查詢失敗', '請稍後再試或手動輸入音標。', 'fa-triangle-exclamation', true);
+        }
+      }
+
+      openWordModal() {
+        document.getElementById('modal-word-title').innerText = '新增單字';
+        document.getElementById('edit-word-id').value = '';
+        document.getElementById('input-word').value = '';
+        document.getElementById('input-phonetic').value = '';
+        document.getElementById('input-meaning').value = '';
+        document.getElementById('input-sentence').value = '';
+        document.getElementById('modal-word').classList.remove('hidden');
+      }
+
+      openEditWordModal(id) {
+        const target = this.words.find(w => w.id === id);
+        if (!target) return;
+
+        document.getElementById('modal-word-title').innerText = '編輯單字';
+        document.getElementById('edit-word-id').value = target.id;
+        document.getElementById('input-word').value = target.word;
+        document.getElementById('input-phonetic').value = target.phonetic || '';
+        document.getElementById('input-meaning').value = target.meaning || '';
+        document.getElementById('input-sentence').value = target.sentence || '';
+        document.getElementById('modal-word').classList.remove('hidden');
+      }
+
+      closeWordModal() {
+        document.getElementById('modal-word').classList.add('hidden');
+      }
+
+      saveWord(e) {
+        e.preventDefault();
+        const word = document.getElementById('input-word').value.trim();
+        const meaning = document.getElementById('input-meaning').value.trim();
+        const editId = document.getElementById('edit-word-id').value;
+        if (!word || !meaning) return;
+
+        const existingIdx = this.words.findIndex(w => w.word.toLowerCase() === word.toLowerCase() && w.id !== editId);
+
+        if (existingIdx !== -1) {
+          const existing = this.words[existingIdx];
+          if (confirm(`單字庫中已存在「${existing.word}」（釋義：${existing.meaning}）。\n\n是否要覆蓋並更新此單字的音標、釋義與例句？`)) {
+            this.words[existingIdx].phonetic = document.getElementById('input-phonetic').value.trim() || existing.phonetic;
+            this.words[existingIdx].meaning = meaning;
+            this.words[existingIdx].sentence = document.getElementById('input-sentence').value.trim() || existing.sentence;
+            this.saveWords();
+            this.renderWordsTable();
+            this.initStudyQueue();
+            this.closeWordModal();
+          }
+          return;
+        }
+
+        if (editId) {
+          const target = this.words.find(w => w.id === editId);
+          if (target) {
+            target.word = word;
+            target.phonetic = document.getElementById('input-phonetic').value.trim();
+            target.meaning = meaning;
+            target.sentence = document.getElementById('input-sentence').value.trim();
+          }
+        } else {
+          const newWord = {
+            id: Date.now().toString(),
+            word: word,
+            phonetic: document.getElementById('input-phonetic').value.trim(),
+            meaning: meaning,
+            sentence: document.getElementById('input-sentence').value.trim(),
+            level: 0,
+            nextReviewDate: getTodayString(),
+            quizCorrects: 0
+          };
+          this.words.unshift(newWord);
+        }
+
+        this.saveWords();
+        this.renderWordsTable();
+        this.initStudyQueue();
+        this.closeWordModal();
+      }
+
+      deleteWord(id) {
+        if (confirm('確定要刪除這個單字嗎？')) {
+          this.words = this.words.filter(w => w.id !== id);
+          this.saveWords();
+          this.renderWordsTable();
+          this.initStudyQueue();
+        }
+      }
+
+
+      // ========== Firebase Auth & Cloud Sync ==========
+      initFirebaseFromStorage() {
+        // Built-in project config (can still override in Settings)
+        const defaultConfig = {"apiKey": "AIzaSyDhbsmaz_OLxpH9KutXhkDdG5taNE_rFvw", "authDomain": "srs-vocab-4643b.firebaseapp.com", "projectId": "srs-vocab-4643b", "storageBucket": "srs-vocab-4643b.firebasestorage.app", "messagingSenderId": "679119663769", "appId": "1:679119663769:web:1ad1a2bf2d9db61c28fe08"};
+        let raw = localStorage.getItem('srs_firebase_config');
+        if (!raw) {
+          raw = JSON.stringify(defaultConfig);
+          localStorage.setItem('srs_firebase_config', raw);
+        }
+        const input = document.getElementById('firebase-config-input');
+        if (input) input.value = raw;
+        try {
+          const cfg = JSON.parse(raw);
+          this.connectFirebase(cfg, false);
+        } catch (e) {
+          this.setFirebaseStatus('設定格式錯誤，請重新貼上', true);
+        }
+      }
+
+      setFirebaseStatus(text, isError = false) {
+        const el = document.getElementById('firebase-status');
+        if (el) {
+          el.innerText = text;
+          el.className = isError ? 'text-[11px] text-rose-600' : 'text-[11px] text-slate-500';
+        }
+      }
+
+      saveFirebaseConfig() {
+        const input = document.getElementById('firebase-config-input');
+        if (!input) return;
+        const raw = input.value.trim();
+        if (!raw) {
+          this.showToast('請貼上設定', '請從 Firebase Console 複製 firebaseConfig 物件。', 'fa-triangle-exclamation', true);
+          return;
+        }
+        let cfg;
+        try {
+          cfg = JSON.parse(raw);
+        } catch (e) {
+          const m = raw.match(/\{[\s\S]*\}/);
+          if (!m) {
+            this.showToast('格式錯誤', '請貼上完整的 JSON 設定物件。', 'fa-triangle-exclamation', true);
+            return;
+          }
+          try { cfg = JSON.parse(m[0]); } catch (e2) {
+            this.showToast('格式錯誤', '無法解析 Firebase 設定。', 'fa-triangle-exclamation', true);
+            return;
+          }
+        }
+        if (!cfg.apiKey || !cfg.projectId) {
+          this.showToast('設定不完整', '需要至少包含 apiKey 與 projectId。', 'fa-triangle-exclamation', true);
+          return;
+        }
+        localStorage.setItem('srs_firebase_config', JSON.stringify(cfg));
+        input.value = JSON.stringify(cfg, null, 2);
+        this.connectFirebase(cfg, true);
+      }
+
+      connectFirebase(cfg, showToast = false) {
+        try {
+          if (typeof firebase === 'undefined') {
+            this.setFirebaseStatus('Firebase SDK 未載入，請檢查網路', true);
+            return;
+          }
+          if (!this.firebaseApp) {
+            this.firebaseApp = firebase.initializeApp(cfg);
+            this.firebaseAuth = firebase.auth();
+            this.firebaseDb = firebase.firestore();
+          }
+          this.attachAuthListener();
+          this.setFirebaseStatus('已連接 Firebase（' + (cfg.projectId || '') + '）');
+          if (showToast) this.showToast('連接成功', '可以註冊或登入帳號了。', 'fa-cloud');
+        } catch (e) {
+          console.error(e);
+          // If already initialized with same app, continue
+          if (String(e.message || e).includes('already exists')) {
+            this.firebaseAuth = firebase.auth();
+            this.firebaseDb = firebase.firestore();
+            this.attachAuthListener();
+            this.setFirebaseStatus('已連接 Firebase（' + (cfg.projectId || '') + '）');
+            if (showToast) this.showToast('已連接', 'Firebase 可用。', 'fa-cloud');
+            return;
+          }
+          this.setFirebaseStatus('連接失敗：' + (e.message || e), true);
+          if (showToast) this.showToast('連接失敗', e.message || '請檢查設定', 'fa-triangle-exclamation', true);
+        }
+      }
+
+      attachAuthListener() {
+        if (!this.firebaseAuth || this._authListenerAttached) return;
+        this._authListenerAttached = true;
+        this.firebaseAuth.onAuthStateChanged(async (user) => {
+          this.currentUser = user;
+          this.updateAuthUI();
+          if (user) {
+            await this.pullWordsFromCloud();
+          }
+        });
+      }
+
+      updateAuthUI() {
+        const label = document.getElementById('auth-header-label');
+        const panel = document.getElementById('auth-logged-in-panel');
+        const form = document.querySelector('#modal-auth form');
+        const emailEl = document.getElementById('auth-current-email');
+        if (this.currentUser) {
+          const short = this.currentUser.email || '已登入';
+          if (label) label.innerText = short.length > 16 ? short.slice(0, 14) + '…' : short;
+          if (panel) panel.classList.remove('hidden');
+          if (form) form.classList.add('hidden');
+          if (emailEl) emailEl.innerText = this.currentUser.email || '';
+          const title = document.getElementById('auth-modal-title');
+          if (title) title.innerText = '帳號';
+        } else {
+          if (label) label.innerText = '登入';
+          if (panel) panel.classList.add('hidden');
+          if (form) form.classList.remove('hidden');
+          const title = document.getElementById('auth-modal-title');
+          if (title) title.innerText = this.authMode === 'register' ? '註冊帳號' : '登入帳號';
+        }
+      }
+
+      openAuthModal() {
+        if (!this.firebaseAuth) {
+          this.showToast('尚未設定 Firebase', '請先到「設定」貼上 Firebase 專案設定並連接。', 'fa-cloud', true);
+          this.switchTab('settings');
+          return;
+        }
+        this.switchAuthMode(this.currentUser ? 'login' : this.authMode);
+        this.updateAuthUI();
+        const err = document.getElementById('auth-error');
+        if (err) { err.classList.add('hidden'); err.innerText = ''; }
+        document.getElementById('modal-auth').classList.remove('hidden');
+      }
+
+      closeAuthModal() {
+        document.getElementById('modal-auth').classList.add('hidden');
+      }
+
+      switchAuthMode(mode) {
+        this.authMode = mode === 'register' ? 'register' : 'login';
+        const loginTab = document.getElementById('auth-tab-login');
+        const regTab = document.getElementById('auth-tab-register');
+        const btn = document.getElementById('auth-submit-btn');
+        const title = document.getElementById('auth-modal-title');
+        if (this.authMode === 'register') {
+          if (loginTab) loginTab.className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600';
+          if (regTab) regTab.className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white';
+          if (btn) btn.innerText = '註冊';
+          if (title && !this.currentUser) title.innerText = '註冊帳號';
+        } else {
+          if (loginTab) loginTab.className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white';
+          if (regTab) regTab.className = 'flex-1 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600';
+          if (btn) btn.innerText = '登入';
+          if (title && !this.currentUser) title.innerText = '登入帳號';
+        }
+      }
+
+      async submitAuth(e) {
+        e.preventDefault();
+        if (!this.firebaseAuth) {
+          this.showToast('尚未連接', '請先設定 Firebase。', 'fa-cloud', true);
+          return;
+        }
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+        const errEl = document.getElementById('auth-error');
+        const showErr = (msg) => {
+          if (errEl) { errEl.innerText = msg; errEl.classList.remove('hidden'); }
+        };
+        try {
+          if (this.authMode === 'register') {
+            await this.firebaseAuth.createUserWithEmailAndPassword(email, password);
+            await this.pushWordsToCloud(true);
+            this.showToast('註冊成功', '已建立帳號並開始雲端同步。', 'fa-user-plus');
+          } else {
+            await this.firebaseAuth.signInWithEmailAndPassword(email, password);
+            this.showToast('登入成功', '正在同步雲端單字…', 'fa-right-to-bracket');
+          }
+          this.closeAuthModal();
+        } catch (err) {
+          const code = err.code || '';
+          let msg = err.message || '登入失敗';
+          if (code === 'auth/email-already-in-use') msg = '此 Email 已被註冊，請改為登入。';
+          else if (code === 'auth/weak-password') msg = '密碼太弱，請至少 6 個字元。';
+          else if (code === 'auth/invalid-email') msg = 'Email 格式不正確。';
+          else if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') msg = 'Email 或密碼錯誤。';
+          else if (code === 'auth/too-many-requests') msg = '嘗試次數過多，請稍後再試。';
+          showErr(msg);
+        }
+      }
+
+      async logout() {
+        if (!this.firebaseAuth) return;
+        try {
+          await this.firebaseAuth.signOut();
+          this.showToast('已登出', '本機資料仍保留，雲端同步已停止。', 'fa-right-from-bracket');
+          this.closeAuthModal();
+        } catch (e) {
+          this.showToast('登出失敗', e.message || '', 'fa-triangle-exclamation', true);
+        }
+      }
+
+      cloudDocRef() {
+        if (!this.firebaseDb || !this.currentUser) return null;
+        return this.firebaseDb.collection('users').doc(this.currentUser.uid);
+      }
+
+      async pushWordsToCloud(forceToast = false) {
+        const ref = this.cloudDocRef();
+        if (!ref || this.cloudSyncing) return;
+        this.cloudSyncing = true;
+        try {
+          await ref.set({
+            words: this.words,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            email: this.currentUser.email || ''
+          }, { merge: true });
+          if (forceToast) this.showToast('已同步', '單字庫已上傳到雲端。', 'fa-cloud-arrow-up');
+        } catch (e) {
+          console.error('cloud push', e);
+          if (forceToast) this.showToast('同步失敗', e.message || '請檢查 Firestore 規則', 'fa-triangle-exclamation', true);
+        } finally {
+          this.cloudSyncing = false;
+        }
+      }
+
+      async pullWordsFromCloud() {
+        const ref = this.cloudDocRef();
+        if (!ref) return;
+        try {
+          const snap = await ref.get();
+          if (snap.exists) {
+            const data = snap.data() || {};
+            if (Array.isArray(data.words) && data.words.length > 0) {
+              this.words = data.words;
+              localStorage.setItem('srs_words', JSON.stringify(this.words));
+              this.initStudyQueue();
+              this.renderWordsTable();
+              this.showToast('已從雲端載入', `共 ${this.words.length} 個單字`, 'fa-cloud-arrow-down');
+              return;
+            }
+          }
+          await this.pushWordsToCloud(false);
+        } catch (e) {
+          console.error('cloud pull', e);
+          this.showToast('載入雲端失敗', e.message || '請檢查網路與 Firestore 規則', 'fa-triangle-exclamation', true);
+        }
+      }
+
+      async syncNow() {
+        if (!this.currentUser) {
+          this.showToast('尚未登入', '請先登入再同步。', 'fa-user', true);
+          return;
+        }
+        await this.pushWordsToCloud(true);
+      }
+
+      switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.className = 'nav-btn flex flex-col items-center justify-center text-slate-400 hover:text-slate-600');
+
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        document.getElementById(`nav-${tab}`).className = 'nav-btn flex flex-col items-center justify-center text-brand-600';
+
+        if (tab === 'quiz') this.initQuizQueue();
+        if (tab === 'vocab') this.renderWordsTable();
+      }
+
+      resetAllData() {
+        if (confirm('確定要清除所有資料並還原為預設 10 個單字嗎？')) {
+          localStorage.removeItem('srs_words');
+          this.words = SEED_WORDS;
+          this.saveWords();
+          this.init();
+          alert('資料已成功重設！');
+        }
+      }
+    }
+
+    // Initialize App when DOM Ready
+    let app;
+    window.addEventListener('DOMContentLoaded', () => {
+      app = new VocabApp();
+    });
+  </script>
+</body>
+</html>
