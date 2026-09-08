@@ -12,13 +12,13 @@
   "lang": "zh"
   "icons": [
     {
-      "src":"./SRS.png",
+      "src":"/https://janaqoiii-web.github.io/english-vocabulary-app/SRS.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     },
     {
-      "src":"./SRS-192.png",
+      "src":"/https://janaqoiii-web.github.io/english-vocabulary-app/SRS-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
