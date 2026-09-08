@@ -2,15 +2,14 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "standalone",
-  "id": "./",
-  "description": "英文生字間隔重複記憶系統",
-  "lang": "zh-TW"
-  "name": "SRS-Vocab",
+  "name": "SRS Vocabulary Master",
   "orientation": "any",
-  "scope": "./",
-  "short_name": "SRS-Vocab",
-  "start_url": "./",
+  "scope": "/https://janaqoiii-web.github.io/english-vocabulary-app/",
+  "short_name": "SRS Vocab",
+  "start_url": "/https://janaqoiii-web.github.io/english-vocabulary-app/",
   "theme_color": "#1BA0F2",
+  "description": "英文生字間隔重複記憶系統",
+  "lang": "zh"
   "icons": [
     {
       "src":"./SRS.png",
