@@ -1,1 +1,28 @@
+<html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1BA0F2">
 
+  <link rel="manifest" href="manifest.json">
+
+  <title>SRS Vocabulary Master</title>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js");
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <h1>SRS Vocabulary Master</h1>
+  <p>英文生字間隔重複記憶系統</p>
+
+  <p><a href="./">開啟 App</a></p>
+</body>
+</html>
